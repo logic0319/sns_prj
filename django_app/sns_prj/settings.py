@@ -35,7 +35,8 @@ else:
     config = json.loads(open(os.path.join(CONF_DIR, 'settings_deploy.json')).read())
 
 ALLOWED_HOSTS = [
-    'team6-dev.ap-northeast-2.elasticbeanstalk.com'
+    'team6-dev.ap-northeast-2.elasticbeanstalk.com',
+    'localhost',
 ]
 
 
