@@ -27,7 +27,13 @@ STATIC_ROOT = os.path.join(ROOT_DIR, 'static_root')
 SECRET_KEY = '3_4@iaozclwv82a7%f82#e3gl!blbt03o6t_g3#%*kr(prfz!j'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = (len(sys.argv) > 1 and sys.argv[1] == 'runserver')
+AUTH_USER_MODEL = 'member.CustomUser'
+
+DEBUG = (
+            sys.argv[1] == 'runserver' or
+            sys.argv[1] == 'makemigrations' or
+            (sys.argv[1] == 'migrate' and len(sys.argv) < 3)
+        )
 
 if DEBUG:
     config = json.loads(open(os.path.join(CONF_DIR, 'settings_debug.json')).read())
