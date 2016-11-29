@@ -7,8 +7,8 @@ class CustomUserManager(BaseUserManager):
     def create_user(
             self,
             email,
-            gender,
-            age,
+            gender=None,
+            age=None,
             password=None,
             ):
         user = self.model(
@@ -23,8 +23,8 @@ class CustomUserManager(BaseUserManager):
     def create_superuser(
             self,
             email,
-            gender,
-            age,
+            gender=None,
+            age=None,
             password=None,
             ):
         user = self.model(
@@ -41,8 +41,8 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=100, unique=True)
-    gender = models.BooleanField()
-    age = models.DateField()
+    gender = models.NullBooleanField(null=True, blank=None)
+    age = models.DateField(null=True, blank=True)
     is_staff = models.BooleanField(default=False)
 
     objects = CustomUserManager()
