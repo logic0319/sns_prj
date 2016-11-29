@@ -24,6 +24,7 @@ class RegisterView(CreateAPIView):
     def perform_create(self, serializer):
         user = serializer.save()
         create_token(self.token_model, user, serializer)
+
         return user
 
     def get_response_data(self, user):

@@ -23,8 +23,8 @@ class CustomUserManager(BaseUserManager):
     def create_superuser(
             self,
             email,
-            gender,
-            age,
+            gender=None,
+            age=None,
             password=None,
             ):
         user = self.model(
