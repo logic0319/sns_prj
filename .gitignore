@@ -5,8 +5,11 @@
 #DB file
 static_root/
 *.sqlite3
+#migrations
+migrations/
 .idea/
 media/
+.python-version
 .conf/
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and
 # Webstorm
