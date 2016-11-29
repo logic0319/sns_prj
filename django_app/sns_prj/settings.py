@@ -35,7 +35,6 @@ DEBUG = (
             (sys.argv[1] == 'migrate' and len(sys.argv) < 3)
         )
 
-DEBUG = True
 if DEBUG:
     config = json.loads(open(os.path.join(CONF_DIR, 'settings_debug.json')).read())
 else:
@@ -44,7 +43,6 @@ else:
 ALLOWED_HOSTS = [
     'team6-dev.ap-northeast-2.elasticbeanstalk.com',
     'localhost',
-    '127.0.0.1',
 ]
 
 
