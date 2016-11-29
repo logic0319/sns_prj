@@ -35,6 +35,7 @@ DEBUG = (
             (sys.argv[1] == 'migrate' and len(sys.argv) < 3)
         )
 
+DEBUG = True
 if DEBUG:
     config = json.loads(open(os.path.join(CONF_DIR, 'settings_debug.json')).read())
 else:
@@ -43,6 +44,7 @@ else:
 ALLOWED_HOSTS = [
     'team6-dev.ap-northeast-2.elasticbeanstalk.com',
     'localhost',
+    '127.0.0.1',
 ]
 
 
@@ -57,10 +59,24 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'member',
-    'storages',
-    'rest_framework',
 
+    #s3
+    'storages',
+
+    #login
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
+
+    #registration
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
 ]
+
+#registration
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -97,12 +113,7 @@ WSGI_APPLICATION = 'sns_prj.wsgi.application'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
+    DATABASES = config['databases']
 else:
     DATABASES = config['databases']
 
@@ -124,6 +135,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# DRF
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
