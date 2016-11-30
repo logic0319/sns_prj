@@ -5,8 +5,12 @@
 #DB file
 static_root/
 *.sqlite3
+<<<<<<< HEAD
 #migrations
 migrations/
+=======
+
+>>>>>>> feature/login
 .idea/
 media/
 .python-version
