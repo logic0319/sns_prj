@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
 
 from member.models import CustomUser
 
@@ -27,3 +28,9 @@ class RegisterSerializer(serializers.Serializer):
             raise serializers.ValidationError("The two password fields didn't match.")
         return data
 
+
+class TokenSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Token
+        fields = ('key',)
