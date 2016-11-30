@@ -29,14 +29,6 @@ SECRET_KEY = '3_4@iaozclwv82a7%f82#e3gl!blbt03o6t_g3#%*kr(prfz!j'
 # SECURITY WARNING: don't run with debug turned on in production!
 AUTH_USER_MODEL = 'member.CustomUser'
 
-
-DEBUG = (
-    len(sys.argv) > 1 and (
-        sys.argv[1] == 'runserver' or
-        sys.argv[1] == 'makemigrations' or
-        (sys.argv[1] == 'migrate' and len(sys.argv) < 3)
-    )
-)
 if 'USER' in os.environ and os.environ['USER'] == 'yunsu':
     DEBUG = True
 
