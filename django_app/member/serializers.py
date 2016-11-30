@@ -1,9 +1,10 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
-from rest_framework import serializers, exceptions
-from rest_framework.authtoken.models import Token
+from rest_framework import exceptions
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
+
 from member.models import CustomUser
 
 UserModel = get_user_model()
@@ -12,6 +13,7 @@ UserModel = get_user_model()
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(style={'input_type': 'passwrd'})
+
 
     def _validate_email(self,email,password):
         user = None
@@ -69,8 +71,25 @@ class RegisterSerializer(serializers.Serializer):
         return data
 
 
+
 class TokenSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Token model.
+    """
+    user_email = serializers.SerializerMethodField()
+    user_gender = serializers.SerializerMethodField()
+    user_age = serializers.SerializerMethodField()
 
     class Meta:
         model = Token
-        fields = ('key',)
+        fields = ('key','user','user_email','user_gender','user_age')
+
+    def get_user_email(self,obj):
+        return obj.user.email
+
+    def get_user_gender(self,obj):
+        return obj.user.gender
+
+    def get_user_age(self,obj):
+        return obj.user.age
+

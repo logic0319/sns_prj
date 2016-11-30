@@ -2,8 +2,6 @@ from django.contrib.auth import (login as django_login,
                                  logout as django_logout)
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
-from rest_auth.app_settings import (create_token)
-from rest_auth.models import TokenModel
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import CreateAPIView
@@ -11,7 +9,6 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from member.serializers import RegisterSerializer
 from .serializers import LoginSerializer,TokenSerializer
 
@@ -19,34 +16,21 @@ from .serializers import LoginSerializer,TokenSerializer
 class LoginView(GenericAPIView):
     permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
-    token_model = TokenModel
-
-    def process_login(self):
-        django_login(self.request, self.user)
+    token_model = Token
 
     def login(self):
         self.user = self.serializer.validated_data['user']
-        self.token = create_token(self.token_model,self.user,self.serializer)
-        self.process_login()
-
-    def get_response_serializer(self):
-        response_serializer = TokenSerializer
-        return response_serializer
-
+        self.token,created = Token.objects.get_or_create(user=self.user)
+        django_login(self.request,self.user)
 
     def get_response(self):
-        serializer_class = self.get_response_serializer()
-        user = self.serializer.validated_data['user']
-        serializer = serializer_class(instance=self.token, context={'request':self.request})
-        print(user.email)
-        print(serializer.data)
+        serializer = TokenSerializer(instance=self.token, context={'request':self.request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self,request,*args, **kwargs):
         self.request = request
         self.serializer = self.get_serializer(data=self.request.data)
         self.serializer.is_valid(raise_exception=True)
-
         self.login()
         return self.get_response()
 
@@ -65,15 +49,17 @@ class LogoutView(APIView):
         return self.logout(request)
 
     def logout(self,request):
+        print(request.user)
         try:
+            print("로그아웃전 토큰{}".format(request.user.auth_token))
             request.user.auth_token.delete()
+            print("로그아웃후 토큰{}".format(request.user.auth_token))
         except(AttributeError,ObjectDoesNotExist):
-            pass
+            print("123")
         django_logout(request)
 
         return Response({"success":_("Successfully logged out.")},
                         status=status.HTTP_200_OK)
-
 
 
 class RegisterView(CreateAPIView):
@@ -88,3 +74,5 @@ class RegisterView(CreateAPIView):
         Token.objects.get_or_create(user=user)
 
         return Response(TokenSerializer(user.auth_token).data, status=status.HTTP_201_CREATED)
+
+

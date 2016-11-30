@@ -7,4 +7,3 @@ urlpatterns = [
     url(r'signup$', RegisterView.as_view(), name='rest_register'),
 
 ]
-
