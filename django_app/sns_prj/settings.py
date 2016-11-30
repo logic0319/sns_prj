@@ -29,7 +29,10 @@ SECRET_KEY = '3_4@iaozclwv82a7%f82#e3gl!blbt03o6t_g3#%*kr(prfz!j'
 # SECURITY WARNING: don't run with debug turned on in production!
 AUTH_USER_MODEL = 'member.CustomUser'
 
-if 'USER' in os.environ and os.environ['USER'] == 'yunsu':
+
+en_name = os.environ['LOGNAME']
+
+if 'USER' in os.environ and os.environ['USER'] == en_name:
     DEBUG = True
 
 if DEBUG:
