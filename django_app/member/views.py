@@ -1,14 +1,18 @@
 from django.contrib.auth import (login as django_login,
                                  logout as django_logout)
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import ugettext_lazy as _
 from rest_auth.app_settings import (create_token)
 from rest_auth.models import TokenModel
-from rest_framework import status, mixins
-from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.generics import CreateAPIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.utils.translation import ugettext_lazy as _
+
+from member.serializers import RegisterSerializer
 from .serializers import LoginSerializer,TokenSerializer
 
 
@@ -72,3 +76,15 @@ class LogoutView(APIView):
 
 
 
+class RegisterView(CreateAPIView):
+    serializer_class = RegisterSerializer
+    permission_classes = (AllowAny, )
+    token_model = Token
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        Token.objects.get_or_create(user=user)
+
+        return Response(TokenSerializer(user.auth_token).data, status=status.HTTP_201_CREATED)

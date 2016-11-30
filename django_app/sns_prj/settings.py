@@ -63,12 +63,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'member',
-    'rest_auth',
-    'rest_framework.authtoken',
+    #s3
     'storages',
+    #login
     'rest_framework',
+    'rest_framework.authtoken',
 
 ]
+
+#registration
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -105,13 +109,7 @@ WSGI_APPLICATION = 'sns_prj.wsgi.application'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 if DEBUG:
-    print('DEBUG DB')
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
+    DATABASES = config['databases']
 else:
     DATABASES = config['databases']
 
@@ -133,6 +131,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# DRF
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
