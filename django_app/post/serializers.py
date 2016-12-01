@@ -14,7 +14,7 @@ class PostListSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=255)
     content = serializers.CharField(max_length=1000)
     like_user_count = serializers.SerializerMethodField()
-    hashtags = HashTagSerializer(many=True, read_only=True)
+    modified_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
     def get_like_user_count(self, obj):
         return obj.like_users.count()

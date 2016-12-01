@@ -5,17 +5,11 @@ from post.models import Post
 from post.serializers import PostListSerializer, PostDetailSerializer
 
 
-class PostListView(mixins.ListModelMixin,
-                  mixins.CreateModelMixin,
-                  generics.GenericAPIView):
+class PostListView(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostListSerializer
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
 
 
 class PostDetailView(mixins.RetrieveModelMixin,
