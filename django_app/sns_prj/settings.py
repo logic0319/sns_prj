@@ -29,13 +29,11 @@ SECRET_KEY = '3_4@iaozclwv82a7%f82#e3gl!blbt03o6t_g3#%*kr(prfz!j'
 # SECURITY WARNING: don't run with debug turned on in production!
 AUTH_USER_MODEL = 'member.CustomUser'
 
-# DEBUG = (
-#             sys.argv[1] == 'runserver' or
-#             sys.argv[1] == 'makemigrations' or
-#             (sys.argv[1] == 'migrate' and len(sys.argv) < 3)
-#         )
 
-DEBUG = False
+en_name = os.environ['LOGNAME']
+
+if 'USER' in os.environ and os.environ['USER'] == en_name:
+    DEBUG = True
 
 if DEBUG:
     config = json.loads(open(os.path.join(CONF_DIR, 'settings_debug.json')).read())
@@ -45,6 +43,7 @@ else:
 ALLOWED_HOSTS = [
     'team6-dev.ap-northeast-2.elasticbeanstalk.com',
     'localhost',
+    '127.0.0.1',
 ]
 
 
@@ -59,20 +58,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'member',
-
     #s3
     'storages',
-
     #login
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_auth',
 
-    #registration
-    'django.contrib.sites',
-    'allauth',
-    'allauth.account',
-    'rest_auth.registration',
 ]
 
 #registration
@@ -184,3 +175,12 @@ else:
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     STATIC_URL = '/static/'
     MEDIA_URL = '/media/'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
