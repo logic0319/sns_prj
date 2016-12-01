@@ -65,8 +65,8 @@ class RegisterSerializer(serializers.Serializer):
         }
         try:
             return CustomUser.objects.create_user(**validated_data)
-        except:
-            raise APIException({"already_exist_email_errors": ["이미 존재하는 email 입니다."]})
+        except Exception as e:
+            raise APIException({"errors": e.args})
 
     def update(self, instance, validated_data):
         pass
