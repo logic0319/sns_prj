@@ -47,10 +47,11 @@ class LoginSerializer(serializers.Serializer):
 
 
 class RegisterSerializer(serializers.Serializer):
+    GENDER_CHOICE = (('M', "Male"), ('F', "Female"),)
     email = serializers.EmailField(required=True)
     password1 = serializers.CharField(required=True, write_only=True)
     password2 = serializers.CharField(required=True, write_only=True)
-    gender = serializers.BooleanField(required=False)
+    gender = serializers.ChoiceField(choices=GENDER_CHOICE, required=False)
     age = serializers.DateField(required=False)
 
     def create(self, validated_data):
