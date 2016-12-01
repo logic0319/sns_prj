@@ -104,3 +104,10 @@ class UserDetailSerializer(serializers.ModelSerializer):
         model = UserModel
         fields = ('email','gender','age')
         read_only_fields = ('email',)
+
+
+class CustomUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserModel
+        fields = ('email', 'age', 'gender')
