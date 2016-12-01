@@ -1,8 +1,6 @@
 from rest_framework import serializers
 
 from post.models import Post, HashTag
-from member.serializers import CustomUserSerializer
-
 
 class HashTagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,7 +27,6 @@ class PostListSerializer(serializers.Serializer):
 
 class PostDetailSerializer(serializers.ModelSerializer):
     like_users_count = serializers.SerializerMethodField()
-    author = CustomUserSerializer(read_only=True)
 
     class Meta:
         model = Post
