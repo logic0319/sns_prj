@@ -39,13 +39,10 @@ class CustomUserManager(BaseUserManager):
         return user
 
 
-
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    M = "Male"
-    F = "Female"
-    GENDER_CHOICE = ((M, "Male"), (F, "Female"),)
+    GENDER_CHOICE = (('M', "Male"), ('F', "Female"),)
     email = models.EmailField(max_length=100, unique=True)
-    gender = models.CharField(max_length=5,
+    gender = models.CharField(max_length=10,
                               choices=GENDER_CHOICE,
                               blank=True
                               )
@@ -57,7 +54,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['gender', 'age']
 
 
-
     def __str__(self):
         return self.email
 
@@ -66,4 +62,3 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def get_short_name(self):
         return self.email
-

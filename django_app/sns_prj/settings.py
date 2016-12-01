@@ -34,6 +34,8 @@ en_name = os.environ.get('LOGNAME')
 
 if 'USER' in os.environ and os.environ['USER'] == en_name:
     DEBUG = True
+else:
+    DEBUG = False
 
 if DEBUG:
     config = json.loads(open(os.path.join(CONF_DIR, 'settings_debug.json')).read())
@@ -58,6 +60,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'member',
+    'post',
     #s3
     'storages',
     #login
