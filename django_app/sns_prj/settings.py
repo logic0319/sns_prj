@@ -30,7 +30,7 @@ SECRET_KEY = '3_4@iaozclwv82a7%f82#e3gl!blbt03o6t_g3#%*kr(prfz!j'
 AUTH_USER_MODEL = 'member.CustomUser'
 
 
-en_name = os.environ['LOGNAME']
+en_name = os.environ.get('LOGNAME')
 
 if 'USER' in os.environ and os.environ['USER'] == en_name:
     DEBUG = True
