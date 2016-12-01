@@ -4,6 +4,8 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import exceptions
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import APIException
+from rest_framework.response import Response
 
 from member.models import CustomUser
 
@@ -61,7 +63,10 @@ class RegisterSerializer(serializers.Serializer):
             'gender': validated_data.get('gender'),
             'age': validated_data.get('age'),
         }
-        return CustomUser.objects.create_user(**validated_data)
+        try:
+            return CustomUser.objects.create_user(**validated_data)
+        except:
+            raise APIException({"already_exist_email_errors": ["이미 존재하는 email 입니다."]})
 
     def update(self, instance, validated_data):
         pass
@@ -70,7 +75,6 @@ class RegisterSerializer(serializers.Serializer):
         if data['password1'] != data['password2']:
             raise serializers.ValidationError("The two password fields didn't match.")
         return data
-
 
 
 class TokenSerializer(serializers.ModelSerializer):
