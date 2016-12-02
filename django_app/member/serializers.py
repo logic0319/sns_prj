@@ -98,3 +98,16 @@ class TokenSerializer(serializers.ModelSerializer):
     def get_user_age(self,obj):
         return obj.user.age
 
+class UserDetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserModel
+        fields = ('email','gender','age')
+        read_only_fields = ('email',)
+
+
+class CustomUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserModel
+        fields = ('email', 'age', 'gender')
