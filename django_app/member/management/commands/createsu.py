@@ -10,12 +10,11 @@ config = json.loads(open(os.path.join(CONF_DIR, 'settings_deploy.json')).read())
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        username = config['defaultSuperuser']['username']
+        email = config['defaultSuperuser']['email']
         password = config['defaultSuperuser']['password']
-        if not User.objects.filter(username=username).exists():
+        if not User.objects.filter(email=email).exists():
             User.objects.create_superuser(
-                username=username,
-                email='a@a.com',
+                email=email,
                 password=password
             )
         else:

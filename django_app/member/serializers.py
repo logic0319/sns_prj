@@ -4,6 +4,8 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import exceptions
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import APIException
+from rest_framework.response import Response
 
 from member.models import CustomUser
 
@@ -47,10 +49,11 @@ class LoginSerializer(serializers.Serializer):
 
 
 class RegisterSerializer(serializers.Serializer):
+    GENDER_CHOICE = (('M', "Male"), ('F', "Female"),)
     email = serializers.EmailField(required=True)
     password1 = serializers.CharField(required=True, write_only=True)
     password2 = serializers.CharField(required=True, write_only=True)
-    gender = serializers.BooleanField(required=False)
+    gender = serializers.ChoiceField(choices=GENDER_CHOICE, required=False)
     age = serializers.DateField(required=False)
 
     def create(self, validated_data):
@@ -60,7 +63,10 @@ class RegisterSerializer(serializers.Serializer):
             'gender': validated_data.get('gender'),
             'age': validated_data.get('age'),
         }
-        return CustomUser.objects.create_user(**validated_data)
+        try:
+            return CustomUser.objects.create_user(**validated_data)
+        except Exception as e:
+            raise APIException({"errors": e.args})
 
     def update(self, instance, validated_data):
         pass
@@ -69,7 +75,6 @@ class RegisterSerializer(serializers.Serializer):
         if data['password1'] != data['password2']:
             raise serializers.ValidationError("The two password fields didn't match.")
         return data
-
 
 
 class TokenSerializer(serializers.ModelSerializer):
@@ -93,3 +98,16 @@ class TokenSerializer(serializers.ModelSerializer):
     def get_user_age(self,obj):
         return obj.user.age
 
+class UserDetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserModel
+        fields = ('email','gender','age')
+        read_only_fields = ('email',)
+
+
+class CustomUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserModel
+        fields = ('email', 'age', 'gender')

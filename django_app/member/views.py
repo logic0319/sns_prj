@@ -4,12 +4,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView
 from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from member.serializers import RegisterSerializer
+from member.serializers import RegisterSerializer, UserDetailSerializer
 from .serializers import LoginSerializer,TokenSerializer
 
 
@@ -49,12 +49,7 @@ class LogoutView(APIView):
         return self.logout(request)
 
     def logout(self,request):
-        print(request.user)
-        try:
-            print("로그아웃전 토큰{}".format(request.user.auth_token))
-            request.user.auth_token.delete()
-        except(AttributeError,ObjectDoesNotExist):
-            print("123")
+        request.user.auth_token.delete()
         django_logout(request)
 
         return Response({"success":_("Successfully logged out.")},
@@ -73,5 +68,3 @@ class RegisterView(CreateAPIView):
         Token.objects.get_or_create(user=user)
 
         return Response(TokenSerializer(user.auth_token).data, status=status.HTTP_201_CREATED)
-
-
