@@ -23,3 +23,11 @@ class HashTag(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post)
+    content = models.CharField(max_length=255)
+    author = models.ForeignKey(CustomUser)
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)

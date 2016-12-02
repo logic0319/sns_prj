@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from post.models import Post, HashTag
+from post.models import Post, HashTag, Comment
+
 
 class HashTagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,6 +25,13 @@ class PostListSerializer(serializers.Serializer):
 
     def update(self, instance, validated_data):
         pass
+
+
+class CommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = ('content', 'modified_date')
 
 
 class PostDetailSerializer(serializers.ModelSerializer):
