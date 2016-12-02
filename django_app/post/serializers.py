@@ -36,12 +36,15 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class PostDetailSerializer(serializers.ModelSerializer):
     like_users_count = serializers.SerializerMethodField()
+    comments = CommentSerializer(many=True, read_only=True, source='comment_set')
+    hashtags = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Post
         fields = ('id', 'title', 'content', 'author', 'modified_date', 'view_count',
-                  'like_users_count','hashtags')
+                  'like_users_count', 'hashtags', 'comments')
 
     def get_like_users_count(self,obj):
         return obj.like_users.count()
+
 
