@@ -11,6 +11,13 @@ class PostListView(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostListSerializer
 
+class MyPostListView(generics.ListAPIView):
+    serializer_class = PostListSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Post.objects.filter(author=user)
+
 
 class PostCreateView(generics.CreateAPIView):
     queryset = Post.objects.all()
