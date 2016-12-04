@@ -1,6 +1,6 @@
 from rest_framework import generics
 from rest_framework import permissions
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import AuthenticationFailed
 
 from post.models import Post, Comment
 from post.serializers import PostListSerializer, PostDetailSerializer, CommentSerializer, PostCreateSerializer
@@ -33,13 +33,13 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
         if request.user.pk == self.get_object().author.pk:
             request.data['author'] = request.user.pk
             return super().update(request, *args, **kwargs)
-        raise APIException({"errors": "수정 권한이 없습니다."})
+        raise AuthenticationFailed(detail="수정 권한이 없습니다.")
 
     def destroy(self, request, *args, **kwargs):
         if request.user.pk == self.get_object().author.pk:
             request.data['author'] = request.user.pk
             return super().destroy(request, *args, **kwargs)
-        raise APIException({"errors": "삭제 권한이 없습니다."})
+        raise AuthenticationFailed(detail="삭제 권한이 없습니다.")
 
 
 class CommentCreateView(generics.CreateAPIView):
