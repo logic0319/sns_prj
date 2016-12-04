@@ -22,6 +22,9 @@ class PostCreateView(generics.CreateAPIView):
         request.data['author'] = pk
         return super().create(request, *args, **kwargs)
 
+    def perform_create(self, serializer):
+        serializer.save(hashtags=dict(self.request.data).get('hashtags'))
+
 
 class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
