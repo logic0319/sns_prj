@@ -48,7 +48,6 @@ class CommentCreateView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
-        print(kwargs)
         request.data['author'] = request.user.pk
         request.data['post'] = kwargs.get('pk')
         return super().create(request, *args, **kwargs)

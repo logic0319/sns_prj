@@ -27,6 +27,8 @@ class PostListSerializer(serializers.ModelSerializer):
             'modified_date',
             'like_users_counts',
             )
+
+
 class PostDetailSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True, source='comment_set')
     hashtags = HashTagSerializer(many=True, read_only=True)
