@@ -43,3 +43,18 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
         raise APIException({"errors": "삭제 권한이 없습니다."})
 
 
+class CommentCreateView(generics.CreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def create(self, request, *args, **kwargs):
+        print(kwargs)
+        request.data['author'] = request.user.pk
+        request.data['post'] = kwargs.get('pk')
+        return super().create(request, *args, **kwargs)
+
+
+class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
