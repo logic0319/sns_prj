@@ -1,10 +1,9 @@
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.exceptions import APIException
-from rest_framework.response import Response
 
-from post.models import Post
-from post.serializers import PostListSerializer, PostDetailSerializer
+from post.models import Post, Comment
+from post.serializers import PostListSerializer, PostDetailSerializer, CommentSerializer, PostCreateSerializer
 
 
 class PostListView(generics.ListAPIView):
