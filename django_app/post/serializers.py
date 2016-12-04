@@ -9,6 +9,10 @@ class HashTagSerializer(serializers.ModelSerializer):
         fields = ('name',)
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('id', 'content', 'post', 'author', 'modified_date')
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -25,11 +29,8 @@ class PostListSerializer(serializers.ModelSerializer):
             )
 
 
-class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Comment
-        fields = ('content', 'modified_date')
 
 
 class PostDetailSerializer(serializers.ModelSerializer):
