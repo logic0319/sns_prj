@@ -4,11 +4,20 @@ from rest_framework.exceptions import AuthenticationFailed
 
 from post.models import Post, Comment
 from post.serializers import PostListSerializer, PostDetailSerializer, CommentSerializer, PostCreateSerializer
+import django_filters
+
+
+class PostFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = Post
+        fields = ['hashtags__name', ]
 
 
 class PostListView(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostListSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_class = PostFilter
 
 
 class PostCreateView(generics.CreateAPIView):
