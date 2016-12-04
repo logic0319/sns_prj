@@ -17,6 +17,10 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
+    @property
+    def like_users_counts(self):
+        return self.like_users.count()
+
 
 class HashTag(models.Model):
     name = models.CharField(max_length=20)
