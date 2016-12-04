@@ -52,7 +52,3 @@ class CommentCreateView(generics.CreateAPIView):
         request.data['post'] = kwargs.get('pk')
         return super().create(request, *args, **kwargs)
 
-
-class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
