@@ -29,14 +29,16 @@ class PostListSerializer(serializers.ModelSerializer):
             )
 
 
+class PostDetailSerializer(serializers.ModelSerializer):
+    comments = CommentSerializer(many=True, read_only=True, source='comment_set')
+    hashtags = HashTagSerializer(many=True, read_only=True)
 
     class Meta:
+        model = Post
+        fields = ('id', 'title', 'content', 'author', 'created_date', 'modified_date', 'view_count',
+                  'like_users_counts', 'hashtags', 'comments')
 
 
-class PostDetailSerializer(serializers.ModelSerializer):
-    like_users_count = serializers.SerializerMethodField()
-    comments = CommentSerializer(many=True, read_only=True, source='comment_set')
-    hashtags = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Post
