@@ -10,4 +10,3 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/like/$', PostLikeView.as_view(), name='post_like'),
     url(r'^(?P<pk>\d+)/bookmark/$', PostBookMarkView.as_view(), name='post_bookmark'),
 ]
-

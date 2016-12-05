@@ -28,10 +28,6 @@ class Post(models.Model):
         except PostBookMark.DoesNotExist:
             return False
 
-    @property
-    def like_users_counts(self):
-        return self.like_users.count()
-
 
 class HashTag(models.Model):
     name = models.CharField(unique=True, max_length=20)
@@ -58,3 +54,4 @@ class PostBookMark(models.Model):
     post = models.ForeignKey(Post)
     bookmark_user = models.ForeignKey(CustomUser)
     created_date = models.DateTimeField(auto_now_add=True)
+

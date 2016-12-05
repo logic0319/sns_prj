@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from post.models import Post, HashTag, Comment
-from post.models import PostLike, PostBookMark
+
+from post.models import Comment
+from post.models import Post, HashTag, PostLike, PostBookMark
 
 
 class HashTagSerializer(serializers.ModelSerializer):
@@ -60,6 +61,7 @@ class PostLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostLike
         fields = ('like_user','post')
+
 
 class PostBookMarkSerializer(serializers.ModelSerializer):
 

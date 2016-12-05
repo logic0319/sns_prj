@@ -32,6 +32,14 @@ class MyPostListView(generics.ListAPIView):
         return Post.objects.filter(author=user)
 
 
+class MyPostListView(generics.ListAPIView):
+    serializer_class = PostListSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Post.objects.filter(author=user)
+
+
 class PostCreateView(generics.CreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostCreateSerializer
@@ -94,29 +102,29 @@ class PostLikeView(generics.CreateAPIView,
 
 class PostBookMarkView(generics.CreateAPIView,
                        generics.DestroyAPIView):
-        queryset = PostBookMark.objects.all()
-        serializer_class = PostBookMarkSerializer
-        permission_classes = (permissions.IsAuthenticated,)
+    queryset = PostBookMark.objects.all()
+    serializer_class = PostBookMarkSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
-        def create(self,request,*args, **kwargs):
-            post = kwargs['pk']
-            user = request.user.pk
-            if PostBookMark.objects.filter(post=post, bookmark_user=user):
-                return Response({"errors": "이미 북마크한 글입니다"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            request.data._mutable = True
-            request.data['bookmark_user'] = request.user.pk
-            request.data['post'] = kwargs['pk']
-            return super().create(request, *args, **kwargs)
+    def create(self,request,*args, **kwargs):
+        post = kwargs['pk']
+        user = request.user.pk
+        if PostBookMark.objects.filter(post=post, bookmark_user=user):
+            return Response({"errors": "이미 북마크한 글입니다"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        request.data._mutable = True
+        request.data['bookmark_user'] = request.user.pk
+        request.data['post'] = kwargs['pk']
+        return super().create(request, *args, **kwargs)
 
-        def destroy(self, request, *args, **kwargs):
-            pk = kwargs['pk']
-            user = request.user.pk
-            try:
-                instance = PostBookMark.objects.get(post=pk, bookmark_user=user)
-            except:
-                return Response({"errors": "아직 북마크하지 않은 글입니다"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            self.perform_destroy(instance)
-            return Response(status=status.HTTP_404_NOT_FOUND)
+    def destroy(self, request, *args, **kwargs):
+        pk = kwargs['pk']
+        user = request.user.pk
+        try:
+            instance = PostBookMark.objects.get(post=pk, bookmark_user=user)
+        except:
+            return Response({"errors": "아직 북마크하지 않은 글입니다"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class CommentCreateView(generics.CreateAPIView):
@@ -128,5 +136,4 @@ class CommentCreateView(generics.CreateAPIView):
         request.data['author'] = request.user.pk
         request.data['post'] = kwargs.get('pk')
         return super().create(request, *args, **kwargs)
-
 
