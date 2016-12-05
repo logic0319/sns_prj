@@ -1,15 +1,17 @@
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 
-from post.models import Post
-from post.serializers import PostListSerializer, PostDetailSerializer
+from post.models import Post, PostLike, PostBookMark
+from post.serializers import PostListSerializer, PostDetailSerializer, PostLikeSerializer, PostCreateSerializer, PostBookMarkSerializer
 
 
 class PostListView(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostListSerializer
+
 
 class MyPostListView(generics.ListAPIView):
     serializer_class = PostListSerializer
@@ -21,7 +23,7 @@ class MyPostListView(generics.ListAPIView):
 
 class PostCreateView(generics.CreateAPIView):
     queryset = Post.objects.all()
-    serializer_class = PostDetailSerializer
+    serializer_class = PostCreateSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
@@ -34,11 +36,6 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostDetailSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
         if request.user.pk == self.get_object().author.pk:
