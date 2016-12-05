@@ -8,7 +8,7 @@ class Post(models.Model):
     author = models.ForeignKey(CustomUser)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
-    view_count = models.IntegerField(default=0)
+    view_counts = models.IntegerField(default=0)
     like_users = models.ManyToManyField(CustomUser, related_name='like_users_set', blank=True)
     bookmark_users = models.ManyToManyField(CustomUser, related_name='bookmark_users_set', blank=True)
     hashtags = models.ManyToManyField('HashTag', blank=True)
