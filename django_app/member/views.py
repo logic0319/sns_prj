@@ -67,4 +67,4 @@ class RegisterView(CreateAPIView):
         user = serializer.save()
         Token.objects.get_or_create(user=user)
 
-        return Response(TokenSerializer(user.auth_token).data, status=status.HTTP_201_CREATED)
+        return Response(TokenSerializer(user.auth_token).data, status=status.HTTP_200_OK)
