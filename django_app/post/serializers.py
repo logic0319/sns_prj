@@ -12,7 +12,7 @@ class HashTagSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ('id', 'content', 'post', 'author', 'modified_date')
+        fields = ('id', 'content', 'author', 'created_date')
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -25,6 +25,7 @@ class PostListSerializer(serializers.ModelSerializer):
             'created_date',
             'modified_date',
             'like_users_counts',
+            'comments_counts',
             )
 
 
