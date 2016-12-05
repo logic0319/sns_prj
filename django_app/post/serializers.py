@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from post.models import Post, HashTag, Comment
+from post.models import Comment
+from post.models import Post, HashTag, PostLike, PostBookMark
 
 
 class HashTagSerializer(serializers.ModelSerializer):
@@ -35,7 +36,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'content', 'author', 'created_date', 'modified_date', 'view_counts',
-                  'like_users_counts', 'hashtags', 'comments')
+                  'like_users_counts', 'hashtags', 'comments','is_bookmarked')
 
 
 class PostCreateSerializer(serializers.ModelSerializer):
@@ -54,4 +55,17 @@ class PostCreateSerializer(serializers.ModelSerializer):
                 post.hashtags.add(h)
         return post
 
+
+class PostLikeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PostLike
+        fields = ('like_user','post')
+
+
+class PostBookMarkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PostBookMark
+        fields = ('bookmark_user','post')
 
