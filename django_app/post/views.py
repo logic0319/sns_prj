@@ -1,6 +1,7 @@
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from post.models import Post, Comment
 from post.serializers import PostListSerializer, PostDetailSerializer, CommentSerializer, PostCreateSerializer
@@ -37,12 +38,16 @@ class PostCreateView(generics.CreateAPIView):
 class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostDetailSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def update(self, request, *args, **kwargs):
         if request.user.pk == self.get_object().author.pk:
             request.data['author'] = request.user.pk
             return super().update(request, *args, **kwargs)
         raise AuthenticationFailed(detail="수정 권한이 없습니다.")
+
+    def perform_update(self, serializer):
+        serializer.save(hashtags=dict(self.request.data).get('hashtags'))
 
     def destroy(self, request, *args, **kwargs):
         if request.user.pk == self.get_object().author.pk:
