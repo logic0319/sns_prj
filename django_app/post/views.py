@@ -32,14 +32,6 @@ class MyPostListView(generics.ListAPIView):
         return Post.objects.filter(author=user)
 
 
-class MyPostListView(generics.ListAPIView):
-    serializer_class = PostListSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        return Post.objects.filter(author=user)
-
-
 class PostCreateView(generics.CreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostCreateSerializer
@@ -82,8 +74,11 @@ class PostLikeView(generics.CreateAPIView,
     def create(self, request, *args, **kwargs):
         post = kwargs['pk']
         like_user = request.user.pk
-        if PostLike.objects.filter(post=post, like_user=like_user):
+        try:
+            PostLike.objects.filter(post=post, like_user=like_user)
             return Response({"errors": "이미 좋아요를 누른 글입니다"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except:
+            pass
         request.data._mutable = True
         request.data['like_user'] = request.user.pk
         request.data['post'] = kwargs['pk']
@@ -97,7 +92,7 @@ class PostLikeView(generics.CreateAPIView,
         except:
             return Response({"errors":"아직 좋아요를 누르지 않은 글입니다"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         self.perform_destroy(instance)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class PostBookMarkView(generics.CreateAPIView,
@@ -109,8 +104,11 @@ class PostBookMarkView(generics.CreateAPIView,
     def create(self,request,*args, **kwargs):
         post = kwargs['pk']
         user = request.user.pk
-        if PostBookMark.objects.filter(post=post, bookmark_user=user):
+        try:
+            PostBookMark.objects.get(post=post, bookmark_user=user)
             return Response({"errors": "이미 북마크한 글입니다"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except:
+            pass
         request.data._mutable = True
         request.data['bookmark_user'] = request.user.pk
         request.data['post'] = kwargs['pk']
@@ -124,7 +122,7 @@ class PostBookMarkView(generics.CreateAPIView,
         except:
             return Response({"errors": "아직 북마크하지 않은 글입니다"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         self.perform_destroy(instance)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CommentCreateView(generics.CreateAPIView):
