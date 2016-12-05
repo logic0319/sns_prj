@@ -48,9 +48,10 @@ class PostCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         hashtags = validated_data.pop('hashtags')
         post = Post.objects.create(**validated_data)
-        for hashtag in hashtags:
-            h, created = HashTag.objects.get_or_create(name=hashtag)
-            post.hashtags.add(h)
+        if hashtags != None:
+            for hashtag in hashtags:
+                h, created = HashTag.objects.get_or_create(name=hashtag)
+                post.hashtags.add(h)
         return post
 
 
