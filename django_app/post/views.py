@@ -1,20 +1,28 @@
 from rest_framework import generics
 from rest_framework import permissions
-from rest_framework.exceptions import APIException
-from rest_framework.response import Response
+from rest_framework.exceptions import AuthenticationFailed
 
-from post.models import Post
-from post.serializers import PostListSerializer, PostDetailSerializer
+from post.models import Post, Comment
+from post.serializers import PostListSerializer, PostDetailSerializer, CommentSerializer, PostCreateSerializer
+import django_filters
+
+
+class PostFilter(django_filters.rest_framework.FilterSet):
+    class Meta:
+        model = Post
+        fields = ['hashtags__name', ]
 
 
 class PostListView(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostListSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_class = PostFilter
 
 
 class PostCreateView(generics.CreateAPIView):
     queryset = Post.objects.all()
-    serializer_class = PostDetailSerializer
+    serializer_class = PostCreateSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
@@ -22,29 +30,34 @@ class PostCreateView(generics.CreateAPIView):
         request.data['author'] = pk
         return super().create(request, *args, **kwargs)
 
+    def perform_create(self, serializer):
+        serializer.save(hashtags=dict(self.request.data).get('hashtags'))
+
 
 class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostDetailSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
         if request.user.pk == self.get_object().author.pk:
-            pk = request.user.pk
-            request.data['author'] = pk
+            request.data['author'] = request.user.pk
             return super().update(request, *args, **kwargs)
-        raise APIException({"errors": "수정 권한이 없습니다."})
+        raise AuthenticationFailed(detail="수정 권한이 없습니다.")
 
     def destroy(self, request, *args, **kwargs):
         if request.user.pk == self.get_object().author.pk:
-            pk = request.user.pk
-            request.data['author'] = pk
+            request.data['author'] = request.user.pk
             return super().destroy(request, *args, **kwargs)
-        raise APIException({"errors": "삭제 권한이 없습니다."})
+        raise AuthenticationFailed(detail="삭제 권한이 없습니다.")
 
+
+class CommentCreateView(generics.CreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def create(self, request, *args, **kwargs):
+        request.data['author'] = request.user.pk
+        request.data['post'] = kwargs.get('pk')
+        return super().create(request, *args, **kwargs)
 

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from post.models import Post, HashTag
+from post.models import Post, HashTag, Comment
+
 
 class HashTagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,32 +9,48 @@ class HashTagSerializer(serializers.ModelSerializer):
         fields = ('name',)
 
 
-class PostListSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    title = serializers.CharField(max_length=255)
-    content = serializers.CharField(max_length=1000)
-    like_user_count = serializers.SerializerMethodField()
-    modified_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
-    author = serializers.CharField()
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('id', 'content', 'post', 'author', 'modified_date')
 
-    def get_like_user_count(self, obj):
-        return obj.like_users.count()
 
-    def create(self, validated_data):
-        pass
-
-    def update(self, instance, validated_data):
-        pass
+class PostListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = (
+            'id',
+            'content',
+            'author',
+            'created_date',
+            'modified_date',
+            'like_users_counts',
+            )
 
 
 class PostDetailSerializer(serializers.ModelSerializer):
-    like_users_count = serializers.SerializerMethodField()
+    comments = CommentSerializer(many=True, read_only=True, source='comment_set')
+    hashtags = HashTagSerializer(many=True, read_only=True)
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'content', 'author', 'modified_date', 'view_count',
-                  'like_users_count','hashtags')
+        fields = ('id', 'content', 'author', 'created_date', 'modified_date', 'view_counts',
+                  'like_users_counts', 'hashtags', 'comments')
 
-    def get_like_users_count(self,obj):
-        return obj.like_users.count()
+
+class PostCreateSerializer(serializers.ModelSerializer):
+    hashtags = HashTagSerializer(many=True)
+
+    class Meta:
+        model = Post
+        fields = ('id', 'content', 'author', 'hashtags')
+
+    def create(self, validated_data):
+        hashtags = validated_data.pop('hashtags')
+        post = Post.objects.create(**validated_data)
+        for hashtag in hashtags:
+            h, created = HashTag.objects.get_or_create(name=hashtag)
+            post.hashtags.add(h)
+        return post
+
 
