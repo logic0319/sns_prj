@@ -20,7 +20,6 @@ class PostListSerializer(serializers.ModelSerializer):
         model = Post
         fields = (
             'id',
-            'title',
             'content',
             'author',
             'created_date',
@@ -35,7 +34,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'content', 'author', 'created_date', 'modified_date', 'view_count',
+        fields = ('id', 'content', 'author', 'created_date', 'modified_date', 'view_count',
                   'like_users_counts', 'hashtags', 'comments')
 
 
@@ -44,7 +43,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'content', 'author', 'hashtags')
+        fields = ('id', 'content', 'author', 'hashtags')
 
     def create(self, validated_data):
         hashtags = validated_data.pop('hashtags')
