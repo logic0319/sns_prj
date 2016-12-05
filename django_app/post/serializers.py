@@ -1,6 +1,6 @@
 from rest_framework import serializers
+from post.models import Post, HashTag, PostLike, PostBookMark
 
-from post.models import Post, HashTag
 
 class HashTagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,14 +10,11 @@ class HashTagSerializer(serializers.ModelSerializer):
 
 class PostListSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
-    title = serializers.CharField(max_length=255)
     content = serializers.CharField(max_length=1000)
-    like_user_count = serializers.SerializerMethodField()
+    like_user_counts = serializers.SerializerMethodField()
+    created_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     modified_date = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     author = serializers.CharField()
-
-    def get_like_user_count(self, obj):
-        return obj.like_users.count()
 
     def create(self, validated_data):
         pass
@@ -27,13 +24,31 @@ class PostListSerializer(serializers.Serializer):
 
 
 class PostDetailSerializer(serializers.ModelSerializer):
-    like_users_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'content', 'author', 'modified_date', 'view_count',
-                  'like_users_count','hashtags')
+        fields = ('id', 'content', 'author', 'modified_date', 'created_date', 'view_counts',
+                  'like_users_counts','is_bookmarked')
 
-    def get_like_users_count(self,obj):
-        return obj.like_users.count()
+
+
+class PostCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Post
+        fields = ('id', 'content', 'author', 'modified_date', 'created_date', 'view_counts',
+                  'like_users_counts',)
+
+
+class PostLikeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PostLike
+        fields = ('like_user','post')
+
+class PostBookMarkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PostBookMark
+        fields = ('bookmark_user','post')
 
