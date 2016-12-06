@@ -54,12 +54,14 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         if request.user.pk == self.get_object().author.pk:
+            request.data._mutable = True
             request.data['author'] = request.user.pk
             return super().update(request, *args, **kwargs)
         raise AuthenticationFailed(detail="수정 권한이 없습니다.")
 
     def destroy(self, request, *args, **kwargs):
         if request.user.pk == self.get_object().author.pk:
+            request.data._mutable = True
             request.data['author'] = request.user.pk
             return super().destroy(request, *args, **kwargs)
         raise AuthenticationFailed(detail="삭제 권한이 없습니다.")
@@ -131,6 +133,7 @@ class CommentCreateView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
+        request.data._mutable = True
         request.data['author'] = request.user.pk
         request.data['post'] = kwargs.get('pk')
         return super().create(request, *args, **kwargs)
