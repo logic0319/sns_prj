@@ -24,14 +24,11 @@ class Post(models.Model):
     def comments_counts(self):
         return self.comment_set.count()
 
-    @property
     def is_bookmarked(self):
-        try:
-            PostBookMark.objects.get(post=self)
-            return True
-        except PostBookMark.DoesNotExist:
-            return False
+        return False
 
+    def is_like(self):
+        return False
 
 class HashTag(models.Model):
     name = models.CharField(unique=True, max_length=20)
