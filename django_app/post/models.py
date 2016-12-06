@@ -14,11 +14,15 @@ class Post(models.Model):
     hashtags = models.ManyToManyField('HashTag', blank=True)
 
     def __str__(self):
-        return self.content
+        return "pk: {}, content: {}".format(self.pk, self.content)
 
     @property
     def like_users_counts(self):
         return self.like_users.count()
+
+    @property
+    def comments_counts(self):
+        return self.comment_set.count()
 
     @property
     def is_bookmarked(self):
@@ -54,4 +58,3 @@ class PostBookMark(models.Model):
     post = models.ForeignKey(Post)
     bookmark_user = models.ForeignKey(CustomUser)
     created_date = models.DateTimeField(auto_now_add=True)
-
