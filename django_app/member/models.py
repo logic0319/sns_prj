@@ -60,7 +60,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['gender', 'age', 'latitude', 'hardness']
+    REQUIRED_FIELDS = []
 
     @property
     def position(self):

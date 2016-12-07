@@ -42,7 +42,6 @@ class PostDetailSerializer(serializers.ModelSerializer):
         fields = ('id', 'content', 'author', 'created_date', 'modified_date', 'view_counts',
                   'like_users_counts', 'distance','is_bookmarked', 'comments_counts', 'hashtags', 'img')
 
-
     def update(self, instance, validated_data):
         hashtags = validated_data.pop('hashtags')
         post = instance
@@ -69,8 +68,8 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         hashtags = validated_data.pop('hashtags')
-        if hasattr(validated_data, 'img'):
-            if DefaultImg.objects.count() != 0:
+
+        if validated_data.get('img') is None and DefaultImg.objects.count() != 0:
                 validated_data['img'] = DefaultImg.objects.all()[random.randrange(0, DefaultImg.objects.count())].img
         post = Post.objects.create(**validated_data)
 
