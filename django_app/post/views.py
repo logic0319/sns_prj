@@ -12,7 +12,8 @@ from .functions import *
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from post.serializers import CommentSerializer
-from post.serializers import PostListSerializer, PostDetailSerializer, PostLikeSerializer, PostCreateSerializer, PostBookMarkSerializer
+from post.serializers import PostListSerializer, PostDetailSerializer, PostLikeSerializer, PostCreateSerializer, \
+    PostBookMarkSerializer
 
 
 class PostFilter(django_filters.rest_framework.FilterSet):
@@ -85,21 +86,6 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        post_pk = instance.pk
-        if PostLike.objects.filter(post=post_pk, like_user=request.user.pk):
-            instance.is_like = True
-        else:
-            instance.is_like = False
-        if PostBookMark.objects.filter(post=post_pk, bookmark_user=request.user.pk):
-            instance.is_bookmarked = True
-        else:
-            instance.is_bookmarked = False
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
-
-
-    def retrieve(self, request, *args, **kwargs):
         user = request.user
         pk = kwargs['pk']
         if hasattr(user, 'latitude') and hasattr(user, 'hardness'):
@@ -123,20 +109,8 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
         if request.user.pk == self.get_object().author.pk:
             request.data._mutable = True
             request.data['author'] = request.user.pk
-            partial = kwargs.pop('partial', False)
-            instance = self.get_object()
-            serializer = self.get_serializer(instance, data=request.data, partial=partial)
-            serializer.is_valid(raise_exception=True)
-            self.perform_update(serializer)
-
-            if getattr(instance, '_prefetched_objects_cache', None):
-                # If 'prefetch_related' has been applied to a queryset, we need to
-                # refresh the instance from the database.
-                instance = self.get_object()
-                serializer = self.get_serializer(instance)
-            return Response(serializer.data)
+            return super().update(request, *args, **kwargs)
         raise AuthenticationFailed(detail="수정 권한이 없습니다.")
-
 
     def perform_update(self, serializer):
         serializer.save(hashtags=dict(self.request.data).get('hashtags'))
