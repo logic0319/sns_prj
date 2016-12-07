@@ -21,13 +21,13 @@ class LoginView(GenericAPIView):
     def login(self):
         self.user = self.serializer.validated_data['user']
         self.token,created = Token.objects.get_or_create(user=self.user)
-        django_login(self.request,self.user)
+        django_login(self.request, self.user)
 
     def get_response(self):
-        serializer = TokenSerializer(instance=self.token, context={'request':self.request})
+        serializer = TokenSerializer(instance=self.token, context={'request': self.request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self,request,*args, **kwargs):
+    def post(self,request):
         self.request = request
         self.serializer = self.get_serializer(data=self.request.data)
         self.serializer.is_valid(raise_exception=True)
@@ -40,19 +40,19 @@ class LogoutView(APIView):
 
     def get(self,request, *args, **kwargs):
         try:
-            response = self.http_method_not_allowed(request,*args, **kwargs)
+            response = self.http_method_not_allowed(request, *args, **kwargs)
         except Exception as exc:
             response = self.handle_exception(exc)
-        return self.finalize_response(request,response,*args,**kwargs)
+        return self.finalize_response(request, response, *args, **kwargs)
 
-    def post(self,request):
+    def post(self, request):
         return self.logout(request)
 
-    def logout(self,request):
+    def logout(self, request):
         request.user.auth_token.delete()
         django_logout(request)
 
-        return Response({"success":_("Successfully logged out.")},
+        return Response({"success": "Successfully logged out."},
                         status=status.HTTP_200_OK)
 
 
