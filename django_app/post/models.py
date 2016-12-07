@@ -19,6 +19,7 @@ class Post(models.Model):
     like_users = models.ManyToManyField(CustomUser, related_name='like_users_set', through='PostLike', blank=True)
     bookmark_users = models.ManyToManyField(CustomUser, related_name='bookmark_users_set',blank=True)
     hashtags = models.ManyToManyField('HashTag', blank=True)
+    distance = models.IntegerField(null=True)
     img = models.ImageField(upload_to=RandomFileName('photo/origin'), blank=True)
     img_thumbnail = models.ImageField(upload_to='photo/thumbnail', blank=True)
 
@@ -33,13 +34,11 @@ class Post(models.Model):
     def comments_counts(self):
         return self.comment_set.count()
 
-    @property
     def is_bookmarked(self):
-        try:
-            PostBookMark.objects.get(post=self)
-            return True
-        except PostBookMark.DoesNotExist:
-            return False
+        return False
+
+    def is_like(self):
+        return False
 
     def make_thumbnail(self):
 
@@ -87,6 +86,9 @@ class Post(models.Model):
             default_storage.delete(self.img.name)
             default_storage.delete(self.img_thumbnail.name)
         super().delete(*args, **kwargs)
+
+    def comments_counts(self):
+        return self.comment_set.all().count()
 
 
 class HashTag(models.Model):
