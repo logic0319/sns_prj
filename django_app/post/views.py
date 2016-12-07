@@ -130,13 +130,13 @@ class PostBookMarkView(generics.CreateAPIView,
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class CommentCreateView(generics.CreateAPIView):
+class CommentListCreateView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def create(self, request, *args, **kwargs):
         request.data['author'] = request.user.pk
-        request.data['post'] = kwargs.get('pk')
+        request.data['post'] = kwargs.get('post_pk')
         return super().create(request, *args, **kwargs)
 

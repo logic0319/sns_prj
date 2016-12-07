@@ -31,13 +31,12 @@ class PostListSerializer(serializers.ModelSerializer):
 
 
 class PostDetailSerializer(serializers.ModelSerializer):
-    comments = CommentSerializer(many=True, read_only=True, source='comment_set')
     hashtags = HashTagSerializer(many=True)
 
     class Meta:
         model = Post
         fields = ('id', 'content', 'author', 'created_date', 'modified_date', 'view_counts',
-                  'like_users_counts', 'hashtags', 'comments','is_bookmarked')
+                  'like_users_counts', 'hashtags', 'is_bookmarked')
 
     def update(self, instance, validated_data):
         hashtags = validated_data.pop('hashtags')
