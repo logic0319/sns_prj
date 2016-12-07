@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 import django_filters
 from rest_framework import generics
 from rest_framework import permissions
@@ -5,11 +6,14 @@ from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-
 from post.models import Comment
 from post.models import Post, PostLike, PostBookMark
+from .functions import *
+from django.contrib.auth import get_user_model
+User = get_user_model()
 from post.serializers import CommentSerializer
-from post.serializers import PostListSerializer, PostDetailSerializer, PostLikeSerializer, PostCreateSerializer, PostBookMarkSerializer
+from post.serializers import PostListSerializer, PostDetailSerializer, PostLikeSerializer, PostCreateSerializer, \
+    PostBookMarkSerializer
 
 
 class PostFilter(django_filters.rest_framework.FilterSet):
@@ -34,6 +38,33 @@ class MyPostListView(generics.ListAPIView):
         return Post.objects.filter(author=user)
 
 
+class PostListByDistanceView(generics.ListAPIView):
+    serializer_class = PostListSerializer
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        if hasattr(user, 'latitude') and hasattr(user, 'hardness'):
+            return self.list(request, *args, **kwargs)
+        Post.objects.all().update(distance=None)
+        return Response({"errors": "사용자의 위치정보가 없습니다"}, status=status.HTTP_404_NOT_FOUND)
+
+    def get_queryset(self):
+        user = self.request.user
+        user_dist = []
+        stand = user.latitude, user.hardness
+        for i in range(len(User.objects.exclude(pk=user.pk))):
+            pk, pos_x, pos_y = User.objects.exclude(pk=user.pk)[i].position
+            dist = cal_distance(stand, (pos_x, pos_y))
+            if dist <= 30:
+                user_dist.append((pk, dist))
+
+        for pk, dis in user_dist:
+            Post.objects.filter(author=pk).update(distance=dis)
+        user_dist.sort(key=lambda x: x[1])
+        near_user = [element[0] for element in user_dist]
+        return Post.objects.filter(author__in=near_user)
+
+
 class PostCreateView(generics.CreateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostCreateSerializer
@@ -53,6 +84,26 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostDetailSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def retrieve(self, request, *args, **kwargs):
+        user = request.user
+        pk = kwargs['pk']
+        if hasattr(user, 'latitude') and hasattr(user, 'hardness'):
+            post = get_object_or_404(Post, pk=pk)
+            author = post.author
+            stand = (user.latitude, user.hardness)
+            if hasattr(author, 'latitude') and hasattr(author, 'hardness'):
+                sample = (author.latitude, author.hardness)
+                dist = cal_distance(stand, sample)
+            else:
+                dist = None
+            post.distance = dist
+            instance = post
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
+        else:
+            Post.objects.filter(pk=pk).update(distance=None)
+            return super().retrieve(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         if request.user.pk == self.get_object().author.pk:
@@ -81,23 +132,20 @@ class PostLikeView(generics.CreateAPIView,
     def create(self, request, *args, **kwargs):
         post = kwargs['pk']
         like_user = request.user.pk
-        try:
-            PostLike.objects.filter(post=post, like_user=like_user)
+        if PostLike.objects.filter(post=post, like_user=like_user):
             return Response({"errors": "이미 좋아요를 누른 글입니다"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        except:
-            pass
         request.data._mutable = True
         request.data['like_user'] = request.user.pk
         request.data['post'] = kwargs['pk']
-        return super().create(request, *args,**kwargs)
+        return super().create(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         pk = kwargs['pk']
         user = request.user.pk
         try:
-            instance = PostLike.objects.get(post=pk,like_user=user)
-        except:
-            return Response({"errors":"아직 좋아요를 누르지 않은 글입니다"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            instance = PostLike.objects.get(post=pk, like_user=user)
+        except PostLike.DoesNotExist:
+            return Response({"errors": "아직 좋아요를 누르지 않은 글입니다"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -108,28 +156,27 @@ class PostBookMarkView(generics.CreateAPIView,
     serializer_class = PostBookMarkSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-    def create(self,request,*args, **kwargs):
+    def create(self, request, *args, **kwargs):
         post = kwargs['pk']
         user = request.user.pk
         try:
             PostBookMark.objects.get(post=post, bookmark_user=user)
-            return Response({"errors": "이미 북마크한 글입니다"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        except:
-            pass
-        request.data._mutable = True
-        request.data['bookmark_user'] = request.user.pk
-        request.data['post'] = kwargs['pk']
-        return super().create(request, *args, **kwargs)
+            return Response({"errors": "이미 북마크한 글입니다"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except PostBookMark.DoesNotExist:
+            request.data._mutable = True
+            request.data['bookmark_user'] = request.user.pk
+            request.data['post'] = kwargs['pk']
+            return super().create(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         pk = kwargs['pk']
         user = request.user.pk
         try:
             instance = PostBookMark.objects.get(post=pk, bookmark_user=user)
-        except:
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except PostBookMark.DoesNotExist:
             return Response({"errors": "아직 북마크하지 않은 글입니다"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CommentListCreateView(generics.ListCreateAPIView):

@@ -29,6 +29,7 @@ class PostListSerializer(serializers.ModelSerializer):
             'modified_date',
             'like_users_counts',
             'comments_counts',
+            'distance'
             'img_thumbnail',
             )
 
@@ -39,7 +40,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'content', 'author', 'created_date', 'modified_date', 'view_counts',
-                  'like_users_counts', 'hashtags', 'comments','is_bookmarked', 'img')
+                  'like_users_counts', 'distance','is_bookmarked', 'comments_counts', 'hashtags', 'comments', 'img')
 
 
     def update(self, instance, validated_data):
@@ -83,12 +84,12 @@ class PostLikeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostLike
-        fields = ('like_user','post')
+        fields = ('like_user', 'post')
 
 
 class PostBookMarkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostBookMark
-        fields = ('bookmark_user','post')
+        fields = ('bookmark_user', 'post')
 
