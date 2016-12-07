@@ -123,7 +123,7 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
                 instance.is_bookmarked = True
             else:
                 instance.is_bookmarked = False
-            if PostLike.objects.filter(post=instance.pk, like_user=requets.user.pk):
+            if PostLike.objects.filter(post=instance.pk, like_user=request.user.pk):
                 instance.is_like = True
             else:
                 instance.is_like = False
