@@ -106,11 +106,29 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
                 dist = None
             post.distance = dist
             instance = post
+            if PostBookMark.objects.filter(post=instance.pk):
+                instance.is_bookmarked = True
+            else:
+                instance.is_bookmarked = False
+            if PostLike.objects.filter(post=instance.pk):
+                instance.is_like = True
+            else:
+                instance.is_like = False
             serializer = self.get_serializer(instance)
             return Response(serializer.data)
         else:
             Post.objects.filter(pk=pk).update(distance=None)
-            return super().retrieve(request, *args, **kwargs)
+            instance = self.get_object()
+            if PostBookMark.objects.filter(post=instance.pk):
+                instance.is_bookmarked = True
+            else:
+                instance.is_bookmarked = False
+            if PostLike.objects.filter(post=instance.pk):
+                instance.is_like = True
+            else:
+                instance.is_like = False
+            serializer = self.get_serializer(instance)
+            return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
         if request.user.pk == self.get_object().author.pk:
