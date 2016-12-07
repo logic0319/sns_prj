@@ -87,9 +87,6 @@ class Post(models.Model):
             default_storage.delete(self.img_thumbnail.name)
         super().delete(*args, **kwargs)
 
-    def comments_counts(self):
-        return self.comment_set.all().count()
-
 
 class HashTag(models.Model):
     name = models.CharField(unique=True, max_length=20)
