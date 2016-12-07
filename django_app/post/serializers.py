@@ -40,7 +40,11 @@ class PostDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'content', 'author', 'created_date', 'modified_date', 'view_counts',
-                  'like_users_counts', 'distance','is_bookmarked', 'comments_counts', 'hashtags', 'img')
+                  'like_users_counts', 'distance','is_bookmarked', 'is_like','comments_counts', 'hashtags', 'img')
+
+
+    def save(self):
+        return super().save()
 
     def update(self, instance, validated_data):
         hashtags = validated_data.pop('hashtags')
