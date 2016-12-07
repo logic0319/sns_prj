@@ -140,3 +140,20 @@ class CommentListCreateView(generics.ListCreateAPIView):
         request.data['post'] = kwargs.get('post_pk')
         return super().create(request, *args, **kwargs)
 
+
+class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def get_queryset(self):
+        return Comment.objects.filter(post=self.kwargs['post_pk'])
+
+    def perform_destroy(self, instance):
+        if instance.author.pk != self.request.user.pk:
+            raise AuthenticationFailed(detail="수정 권한이 없습니다.")
+        instance.delete()
+
+    def perform_update(self, serializer):
+        if serializer.instance.author.pk != self.request.user.pk:
+            raise AuthenticationFailed(detail="수정 권한이 없습니다.")
+        serializer.save()
