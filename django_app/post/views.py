@@ -49,7 +49,7 @@ class PostListByDistanceView(generics.ListAPIView):
         user = request.user
         if user.latitude is not None and user.hardness is not None:
             return self.list(request, *args, **kwargs)
-        Post.objects.all().update(distance=None)
+        Post.objects.filter().update(distance=None)
         return Response({"errors": "사용자의 위치정보가 없습니다"}, status=status.HTTP_404_NOT_FOUND)
 
     def get_queryset(self):
@@ -92,6 +92,9 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     def retrieve(self, request, *args, **kwargs):
         user = request.user
         pk = kwargs['pk']
+        if user.is_anonymous():
+            Post.objects.filter(pk=pk).update(distance=None)
+            return super().retrieve(request, *args, **kwargs)
         if user.latitude is not None and user.hardness is not None:
             post = get_object_or_404(Post, pk=pk)
             author = post.author
