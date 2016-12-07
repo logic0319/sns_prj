@@ -9,12 +9,16 @@ class CustomUserManager(BaseUserManager):
             email,
             gender=None,
             age=None,
+            latitude=None,
+            hardness=None,
             password=None,
             ):
         user = self.model(
             email=email,
             gender=gender,
             age=age,
+            latitude=latitude,
+            hardness=hardness,
         )
         user.set_password(password)
         user.save()
@@ -25,12 +29,16 @@ class CustomUserManager(BaseUserManager):
             email,
             gender=None,
             age=None,
+            latitude=None,
+            hardness=None,
             password=None,
             ):
         user = self.model(
             email=email,
             gender=gender,
             age=age,
+            latitude=latitude,
+            hardness=hardness,
         )
         user.set_password(password)
         user.is_staff = True
@@ -46,13 +54,17 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                               choices=GENDER_CHOICE,
                               null=True,blank=True
                               )
-
     age = models.DateField(null=True)
+    latitude = models.FloatField(null=True)
+    hardness = models.FloatField(null=True)
     is_staff = models.BooleanField(default=False)
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['gender', 'age']
+    REQUIRED_FIELDS = ['gender', 'age','latutude','hardness']
 
+    @property
+    def position(self):
+        return self.pk, self.latitude, self.hardness
 
     def __str__(self):
         return self.email
