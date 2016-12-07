@@ -4,7 +4,8 @@ from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from .paginations import PostListPagination, CommentListPagination
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from post.models import Comment
 from post.models import Post, PostLike, PostBookMark
@@ -28,6 +29,7 @@ class PostListView(generics.ListAPIView):
     serializer_class = PostListSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = PostFilter
+    pagination_class = PostListPagination
 
 
 class MyPostListView(generics.ListAPIView):
@@ -40,10 +42,12 @@ class MyPostListView(generics.ListAPIView):
 
 class PostListByDistanceView(generics.ListAPIView):
     serializer_class = PostListSerializer
+    pagination_class = PostListPagination
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        if hasattr(user, 'latitude') and hasattr(user, 'hardness'):
+        if user.latitude is not None and user.hardness is not None:
             return self.list(request, *args, **kwargs)
         Post.objects.all().update(distance=None)
         return Response({"errors": "사용자의 위치정보가 없습니다"}, status=status.HTTP_404_NOT_FOUND)
@@ -54,10 +58,10 @@ class PostListByDistanceView(generics.ListAPIView):
         stand = user.latitude, user.hardness
         for i in range(len(User.objects.exclude(pk=user.pk))):
             pk, pos_x, pos_y = User.objects.exclude(pk=user.pk)[i].position
-            dist = cal_distance(stand, (pos_x, pos_y))
-            if dist <= 30:
-                user_dist.append((pk, dist))
-
+            if User.objects.get(pk=pk).latitude is not None and User.objects.get(pk=pk).hardness is not None:
+                dist = cal_distance(stand, (pos_x, pos_y))
+                if dist <= 30:
+                    user_dist.append((pk, dist))
         for pk, dis in user_dist:
             Post.objects.filter(author=pk).update(distance=dis)
         user_dist.sort(key=lambda x: x[1])
@@ -88,11 +92,11 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     def retrieve(self, request, *args, **kwargs):
         user = request.user
         pk = kwargs['pk']
-        if hasattr(user, 'latitude') and hasattr(user, 'hardness'):
+        if user.latitude is not None and user.hardness is not None:
             post = get_object_or_404(Post, pk=pk)
             author = post.author
             stand = (user.latitude, user.hardness)
-            if hasattr(author, 'latitude') and hasattr(author, 'hardness'):
+            if author.latitude is not None and author.hardness is not None:
                 sample = (author.latitude, author.hardness)
                 dist = cal_distance(stand, sample)
             else:
@@ -183,6 +187,7 @@ class CommentListCreateView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    pagination_class = CommentListPagination
 
     def create(self, request, *args, **kwargs):
         request.data._mutable = True
