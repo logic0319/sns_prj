@@ -82,6 +82,12 @@ class Post(models.Model):
             if image_changed:
                 self.make_thumbnail()
 
+    def delete(self, *args, **kwargs):
+        if self.img.name.split("/")[1] != "default":
+            default_storage.delete(self.img.name)
+            default_storage.delete(self.img_thumbnail.name)
+        super().delete(*args, **kwargs)
+
 
 class HashTag(models.Model):
     name = models.CharField(unique=True, max_length=20)
