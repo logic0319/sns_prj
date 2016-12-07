@@ -82,7 +82,7 @@ class Post(models.Model):
                 self.make_thumbnail()
 
     def delete(self, *args, **kwargs):
-        if self.img.name.split("/")[1] != "default":
+        if self.img.name != "" and self.img.name.split("/")[1] != "default":
             default_storage.delete(self.img.name)
             default_storage.delete(self.img_thumbnail.name)
         super().delete(*args, **kwargs)
