@@ -12,6 +12,7 @@ class Post(models.Model):
     like_users = models.ManyToManyField(CustomUser, related_name='like_users_set', through='PostLike', blank=True)
     bookmark_users = models.ManyToManyField(CustomUser, related_name='bookmark_users_set',blank=True)
     hashtags = models.ManyToManyField('HashTag', blank=True)
+    distance = models.IntegerField(null=True)
 
     def __str__(self):
         return self.content
@@ -27,6 +28,13 @@ class Post(models.Model):
             return True
         except PostBookMark.DoesNotExist:
             return False
+
+    def comments_counts(self):
+        return self.comment_set.all().count()
+
+
+
+
 
 
 class HashTag(models.Model):
