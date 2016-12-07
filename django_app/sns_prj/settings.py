@@ -69,9 +69,6 @@ INSTALLED_APPS = [
 
 ]
 
-#registration
-SITE_ID = 1
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -141,9 +138,9 @@ REST_FRAMEWORK = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko-kr'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
@@ -156,7 +153,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_S3 = True
-
 if not DEBUG or STATIC_S3:
     AWS_HEADERS = {
         'Expires': 'Thu, 31 Dec 2199 20:00:00 GMT',
@@ -169,11 +165,11 @@ if not DEBUG or STATIC_S3:
 
     STATICFILES_LOCATION = 'static'
     STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
-    STATICFILES_STORAGE = 'sns_prj.custom_storages.StaticStorage'
+    STATICFILES_STORAGE = 'sns_prj.custom_storage.StaticStorage'
 
     MEDIAFILES_LOCATION = 'media'
     MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
-    DEFAULT_FILE_STORAGE = 'sns_prj.custom_storages.MediaStorage'
+    DEFAULT_FILE_STORAGE = 'sns_prj.custom_storage.MediaStorage'
 else:
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     STATIC_URL = '/static/'
