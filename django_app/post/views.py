@@ -106,11 +106,11 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
                 dist = None
             post.distance = dist
             instance = post
-            if PostBookMark.objects.filter(post=instance.pk):
+            if PostBookMark.objects.filter(post=instance.pk, bookmark_user=request.user.pk):
                 instance.is_bookmarked = True
             else:
                 instance.is_bookmarked = False
-            if PostLike.objects.filter(post=instance.pk):
+            if PostLike.objects.filter(post=instance.pk, like_user=request.user.pk):
                 instance.is_like = True
             else:
                 instance.is_like = False
@@ -119,11 +119,11 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
         else:
             Post.objects.filter(pk=pk).update(distance=None)
             instance = self.get_object()
-            if PostBookMark.objects.filter(post=instance.pk):
+            if PostBookMark.objects.filter(post=instance.pk, bookmark_user=request.user.pk):
                 instance.is_bookmarked = True
             else:
                 instance.is_bookmarked = False
-            if PostLike.objects.filter(post=instance.pk):
+            if PostLike.objects.filter(post=instance.pk, like_user=requets.user.pk):
                 instance.is_like = True
             else:
                 instance.is_like = False
