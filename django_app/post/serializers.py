@@ -1,6 +1,8 @@
+import random
+
 from rest_framework import serializers
 
-from post.models import Comment
+from post.models import Comment, DefaultImg
 from post.models import Post, HashTag, PostLike, PostBookMark
 
 
@@ -66,6 +68,8 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         hashtags = validated_data.pop('hashtags')
+        if validated_data.get('img') is None:
+            validated_data['img'] = DefaultImg.objects.all()[random.randrange(0, DefaultImg.objects.count())].img
         post = Post.objects.create(**validated_data)
 
         if hashtags != None:

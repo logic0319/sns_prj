@@ -19,7 +19,7 @@ class Post(models.Model):
     like_users = models.ManyToManyField(CustomUser, related_name='like_users_set', through='PostLike', blank=True)
     bookmark_users = models.ManyToManyField(CustomUser, related_name='bookmark_users_set',blank=True)
     hashtags = models.ManyToManyField('HashTag', blank=True)
-    img = models.ImageField(upload_to=RandomFileName('photo/origin'))
+    img = models.ImageField(upload_to=RandomFileName('photo/origin'), blank=True)
     img_thumbnail = models.ImageField(upload_to='photo/thumbnail', blank=True)
 
     def __str__(self):
@@ -108,3 +108,7 @@ class PostBookMark(models.Model):
     post = models.ForeignKey(Post)
     bookmark_user = models.ForeignKey(CustomUser)
     created_date = models.DateTimeField(auto_now_add=True)
+
+
+class DefaultImg(models.Model):
+    img = models.ImageField(upload_to=RandomFileName('photo/default'))
