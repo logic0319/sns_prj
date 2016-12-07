@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.exceptions import AuthenticationFailed
@@ -7,7 +8,11 @@ import django_filters
 from rest_framework import status
 from rest_framework.response import Response
 from post.models import Post, PostLike, PostBookMark
-from post.serializers import PostListSerializer, PostDetailSerializer, PostLikeSerializer, PostCreateSerializer, PostBookMarkSerializer
+from post.serializers import PostListSerializer, PostDetailSerializer, PostLikeSerializer, PostCreateSerializer,\
+    PostBookMarkSerializer
+from .functions import *
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 class PostFilter(django_filters.rest_framework.FilterSet):
@@ -30,6 +35,33 @@ class MyPostListView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return Post.objects.filter(author=user)
+
+
+class PostListByDistanceView(generics.ListAPIView):
+    serializer_class = PostListSerializer
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        if hasattr(user, 'latitude') and hasattr(user, 'hardness'):
+            return self.list(request, *args, **kwargs)
+        Post.objects.all().update(distance=None)
+        return Response({"errors": "사용자의 위치정보가 없습니다"}, status=status.HTTP_404_NOT_FOUND)
+
+    def get_queryset(self):
+        user = self.request.user
+        user_dist = []
+        stand = user.latitude, user.hardness
+        for i in range(len(User.objects.exclude(pk=user.pk))):
+            pk, pos_x, pos_y = User.objects.exclude(pk=user.pk)[i].position
+            dist = cal_distance(stand, (pos_x, pos_y))
+            if dist <= 30:
+                user_dist.append((pk, dist))
+
+        for pk, dis in user_dist:
+            Post.objects.filter(author=pk).update(distance=dis)
+        user_dist.sort(key=lambda x: x[1])
+        near_user = [element[0] for element in user_dist]
+        return Post.objects.filter(author__in=near_user)
 
 
 class PostCreateView(generics.CreateAPIView):
