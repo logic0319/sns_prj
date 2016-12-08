@@ -8,4 +8,4 @@ class PostListPagination(CursorPagination):
 
 class CommentListPagination(CursorPagination):
     page_size = 10
-    ordering = '-created_date' 
+    ordering = 'created_date' 
