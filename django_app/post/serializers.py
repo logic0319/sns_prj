@@ -7,6 +7,7 @@ from post.models import Post, HashTag, PostLike, PostBookMark
 
 
 class HashTagSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = HashTag
         fields = ('name',)
@@ -40,14 +41,10 @@ class PostDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'content', 'author', 'created_date', 'modified_date', 'view_counts',
-                  'like_users_counts', 'distance','is_bookmarked', 'is_like','comments_counts', 'hashtags', 'img')
-
-
-    def save(self):
-        return super().save()
+                  'like_users_counts', 'distance', 'is_bookmarked', 'is_like', 'comments_counts', 'hashtags', 'img')
 
     def update(self, instance, validated_data):
-        hashtags = validated_data.pop('hashtags')
+        hashtags = self.initial_data.get('hashtags')
         post = instance
 
         post.content = validated_data.get('content', instance.content)
@@ -55,7 +52,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
 
         post.save()
 
-        if hashtags!= None:
+        if hashtags is not None:
             post.hashtags.all().delete()
             for hashtag in hashtags:
                 h, created = HashTag.objects.get_or_create(name=hashtag)

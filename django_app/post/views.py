@@ -137,9 +137,6 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
             return super().update(request, *args, **kwargs)
         raise AuthenticationFailed(detail="수정 권한이 없습니다.")
 
-    def perform_update(self, serializer):
-        serializer.save(hashtags=dict(self.request.data).get('hashtags'))
-
     def destroy(self, request, *args, **kwargs):
         if request.user.pk == self.get_object().author.pk:
             request.data._mutable = True
