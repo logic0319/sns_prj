@@ -5,11 +5,11 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from post.functions import cal_distance
-from post.models import Post
+from post.models import Post,PostBookMark
 from post.paginations import PostListPagination
 from post.serializers import PostListSerializer
 
-__all__ = ('MyPostListView', 'PostListView', 'PostListByDistanceView')
+__all__ = ('MyPostListView', 'PostListView', 'PostListByDistanceView', 'PostListBookMarkedView', )
 
 
 class PostFilter(django_filters.rest_framework.FilterSet):
@@ -62,3 +62,17 @@ class PostListByDistanceView(generics.ListAPIView):
         user_dist.sort(key=lambda x: x[1])
         near_user = [element[0] for element in user_dist]
         return Post.objects.filter(author__in=near_user)
+
+
+class PostListBookMarkedView(generics.ListAPIView):
+    serializer_class = PostListSerializer
+    pagination_class = PostListPagination
+    permission_classes = (IsAuthenticated, )
+
+    def get_queryset(self):
+
+        return Post.objects.filter(pk__in=PostBookMark.objects.filter(
+            bookmark_user=self.request.user).values_list('post', flat=True))
+
+
+

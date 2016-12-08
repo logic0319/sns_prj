@@ -7,6 +7,7 @@ from post.serializers import PostBookMarkSerializer, PostLikeSerializer
 
 __all__ = ('PostLikeView', 'PostBookMarkView',)
 
+
 class PostLikeView(generics.CreateAPIView,
                    generics.DestroyAPIView):
     queryset = PostLike.objects.all()
