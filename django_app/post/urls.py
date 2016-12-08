@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^(?P<post_pk>\d+)/comment/(?P<pk>\d+)/$', CommentDetailView.as_view(), name='comment_detail'),
     url(r'^(?P<pk>\d+)/like/$', PostLikeView.as_view(), name='post_like'),
     url(r'^(?P<pk>\d+)/bookmark/$', PostBookMarkView.as_view(), name='post_bookmark'),
+    url(r'^hashtags/$',HashTagList.as_view(), name='hashtag_list'),
 ]
