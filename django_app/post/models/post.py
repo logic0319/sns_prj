@@ -1,13 +1,13 @@
 import os
 from io import BytesIO
-
 from PIL import Image, ImageOps
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.db import models
-
 from member.models import CustomUser
 from sns_prj.custom_storage import RandomFileName
+
+__all__ = ('Post', )
 
 
 class Post(models.Model):
@@ -88,32 +88,3 @@ class Post(models.Model):
         super().delete(*args, **kwargs)
 
 
-class HashTag(models.Model):
-    name = models.CharField(unique=True, max_length=20)
-
-    def __str__(self):
-        return self.name
-
-
-class Comment(models.Model):
-    post = models.ForeignKey(Post)
-    content = models.CharField(max_length=255)
-    author = models.ForeignKey(CustomUser)
-    created_date = models.DateTimeField(auto_now_add=True)
-    modified_date = models.DateTimeField(auto_now=True)
-
-
-class PostLike(models.Model):
-    post = models.ForeignKey(Post)
-    like_user = models.ForeignKey(CustomUser)
-    created_date = models.DateTimeField(auto_now_add=True)
-
-
-class PostBookMark(models.Model):
-    post = models.ForeignKey(Post)
-    bookmark_user = models.ForeignKey(CustomUser)
-    created_date = models.DateTimeField(auto_now_add=True)
-
-
-class DefaultImg(models.Model):
-    img = models.ImageField(upload_to=RandomFileName('photo/default'))
