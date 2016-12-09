@@ -1,7 +1,7 @@
 import random
 
 from rest_framework import serializers
-
+from django.utils import timezone
 from post.models import DefaultImg
 from post.models import Post, HashTag
 from post.serializers import HashTagSerializer
@@ -20,7 +20,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         hashtags = self.initial_data.get('hashtags')
         post = instance
-
+        post.modified_date = timezone.now()
         post.content = validated_data.get('content', instance.content)
         post.img = validated_data.get('img', instance.img)
 

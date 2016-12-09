@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from post.functions import cal_distance
 from post.models import Post, PostBookMark, PostLike
 from post.serializers import PostCreateSerializer, PostDetailSerializer
+from django.utils import timezone
 
 __all__ = ('PostCreateView', 'PostDetailView', )
 

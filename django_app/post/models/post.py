@@ -6,7 +6,7 @@ from django.core.files.storage import default_storage
 from django.db import models
 from member.models import CustomUser
 from sns_prj.custom_storage import RandomFileName
-
+from django.utils import timezone
 __all__ = ('Post', )
 
 
@@ -14,7 +14,7 @@ class Post(models.Model):
     content = models.TextField()
     author = models.ForeignKey(CustomUser)
     created_date = models.DateTimeField(auto_now_add=True)
-    modified_date = models.DateTimeField(auto_now=True)
+    modified_date = models.DateTimeField(null=True)
     view_counts = models.IntegerField(default=0)
     like_users = models.ManyToManyField(CustomUser, related_name='like_users_set', through='PostLike', blank=True)
     bookmark_users = models.ManyToManyField(CustomUser, related_name='bookmark_users_set',blank=True)
