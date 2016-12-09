@@ -26,7 +26,7 @@ class RegisterView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         content = request.META['HTTP_HOST'] + "/member/email_verify/" + user.get_email_verify_hash() + "/?email="+user.email
-        send_mail("email verifying", content)
+        send_mail("email verifying", content, (user.email,))
         Token.objects.get_or_create(user=user)
 
         return Response(TokenSerializer(user.auth_token).data, status=status.HTTP_200_OK)
