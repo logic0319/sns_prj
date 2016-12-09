@@ -44,14 +44,12 @@ class PostBookMarkView(generics.CreateAPIView,
     def create(self, request, *args, **kwargs):
         post = kwargs['pk']
         user = request.user.pk
-        try:
-            PostBookMark.objects.get(post=post, bookmark_user=user)
+        if PostBookMark.objects.filter(post=post, bookmark_user=user):
             return Response({"detail": "이미 북마크한 글입니다"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        except PostBookMark.DoesNotExist:
-            request.data._mutable = True
-            request.data['bookmark_user'] = request.user.pk
-            request.data['post'] = kwargs['pk']
-            return super().create(request, *args, **kwargs)
+        request.data._mutable = True
+        request.data['bookmark_user'] = request.user.pk
+        request.data['post'] = kwargs['pk']
+        return super().create(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         pk = kwargs['pk']
