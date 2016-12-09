@@ -42,6 +42,15 @@ if DEBUG:
 else:
     config = json.loads(open(os.path.join(CONF_DIR, 'settings_deploy.json')).read())
 
+
+email_config = config['email']
+EMAIL_HOST = email_config['EMAIL_HOST']
+EMAIL_PORT = email_config['EMAIL_PORT']
+EMAIL_HOST_USER = email_config['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = email_config['EMAIL_HOST_PASSWORD']
+EMAIL_USE_TLS = email_config['EMAIL_USER_TLS']
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 ALLOWED_HOSTS = [
     'team6-dev.ap-northeast-2.elasticbeanstalk.com',
     'localhost',
