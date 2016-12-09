@@ -1,15 +1,26 @@
+import hashlib
+
 from django.contrib.auth import (login as django_login,
                                  logout as django_logout)
+from django.http import HttpResponse
+from django.views import View
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import CreateAPIView
-from rest_framework.generics import GenericAPIView, UpdateAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.generics import GenericAPIView
+from rest_framework.generics import UpdateAPIView
+from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from apis.mail import send_mail
 from member.serializers import RegisterSerializer
-from .serializers import LoginSerializer,TokenSerializer, UserDetailSerializer
-from .models import CustomUser as User
+from sns_prj import settings
+from .models import CustomUser as User, CustomUser
+from .serializers import LoginSerializer,TokenSerializer
+from .serializers import UserDetailSerializer
+
 
 class LoginView(GenericAPIView):
     permission_classes = (AllowAny,)
@@ -63,6 +74,8 @@ class RegisterView(CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        content = request.META['HTTP_HOST'] + "/member/email_verify/" + user.get_email_verify_hash() + "/?email="+user.email
+        send_mail("email verifying", content)
         Token.objects.get_or_create(user=user)
 
         return Response(TokenSerializer(user.auth_token).data, status=status.HTTP_200_OK)
@@ -77,6 +90,24 @@ class UserUpdateView(UpdateAPIView):
         if request.user == self.get_object():
             return super().update(request, *args, **kwargs)
         return Response({"errors": "현재유저와 수정 요청된 유저가 다릅니다"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class EmailVerifyingView(View):
+
+    def get(self, *args, **kwargs):
+        email = self.request.GET['email']
+        hash_input = email + settings.SALT
+        m = hashlib.md5()
+        m.update(hash_input.encode('utf-8'))
+        hash_output = m.hexdigest()[0:10]
+
+        if hash_output == kwargs['hash']:
+            user = CustomUser.objects.get(email=email)
+            user.is_active = True
+            user.save()
+            return HttpResponse("인증 성공")
+        else:
+            return HttpResponse("인증 실패")
 
 
 

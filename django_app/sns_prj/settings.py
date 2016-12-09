@@ -135,6 +135,18 @@ REST_FRAMEWORK = {
     )
 }
 
+# Email
+email_config = config['email']
+EMAIL_HOST = email_config['EMAIL_HOST']
+EMAIL_PORT = email_config['EMAIL_PORT']
+EMAIL_HOST_USER = email_config['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = email_config['EMAIL_HOST_PASSWORD']
+EMAIL_USE_TLS = email_config['EMAIL_USER_TLS']
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+#salt
+SALT = config['salt']
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 

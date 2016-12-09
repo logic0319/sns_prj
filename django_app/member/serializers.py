@@ -15,7 +15,7 @@ class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(style={'input_type': 'password'})
 
-    def _validate_email(self,email,password):
+    def _validate_email(self, email, password):
         user = None
         if email and password:
             user = authenticate(email=email, password=password)
