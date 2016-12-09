@@ -11,9 +11,6 @@ class PwChangeSerializer(serializers.Serializer):
     password1 = serializers.CharField(required=True, write_only=True)
     password2 = serializers.CharField(required=True, write_only=True)
 
-    def save(self):
-        pass
-
     def validate(self, data):
         if data['password1'] != data['password2']:
             raise serializers.ValidationError("The two password fields didn't match.")
