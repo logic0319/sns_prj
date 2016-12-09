@@ -37,17 +37,9 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
         if user.is_anonymous():
             Post.objects.filter(pk=pk).update(distance=None)
             return super().retrieve(request, *args, **kwargs)
-        if user.latitude is not None and user.hardness is not None:
-            post = get_object_or_404(Post, pk=pk)
-            author = post.author
-            stand = (user.latitude, user.hardness)
-            if author.latitude is not None and author.hardness is not None:
-                sample = (author.latitude, author.hardness)
-                dist = cal_distance(stand, sample)
-            else:
-                dist = None
-            post.distance = dist
-            instance = post
+        if user.latitude or user.hardness:
+            Post.objects.filter(pk=pk).update(distance=None)
+            instance = self.get_object()
             if PostBookMark.objects.filter(post=instance.pk, bookmark_user=request.user.pk):
                 instance.is_bookmarked = True
             else:
@@ -58,9 +50,18 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
                 instance.is_like = False
             serializer = self.get_serializer(instance)
             return Response(serializer.data)
+
         else:
-            Post.objects.filter(pk=pk).update(distance=None)
-            instance = self.get_object()
+            post = get_object_or_404(Post, pk=pk)
+            author = post.author
+            stand = (user.latitude, user.hardness)
+            if author.latitude is not None and author.hardness is not None:
+                sample = (author.latitude, author.hardness)
+                dist = cal_distance(stand, sample)
+            else:
+                dist = None
+            post.distance = dist
+            instance = post
             if PostBookMark.objects.filter(post=instance.pk, bookmark_user=request.user.pk):
                 instance.is_bookmarked = True
             else:
