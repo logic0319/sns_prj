@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 UserModel = get_user_model()
 
-__all__ = ('CustomUserSerializer', )
+__all__ = ('CustomUserSerializer', 'UserEmailSerializer', )
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -12,3 +12,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         fields = ('email', 'age', 'gender')
 
 
+class UserEmailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserModel
+        fields = ('email', )
