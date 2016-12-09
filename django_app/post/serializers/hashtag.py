@@ -6,7 +6,6 @@ __all__ = ('HashTagSerializer', 'HashTag2Serializer', )
 
 
 class HashTagSerializer(serializers.ModelSerializer):
-    related_posts_counts = serializers.SerializerMethodField()
 
     class Meta:
         model = HashTag
