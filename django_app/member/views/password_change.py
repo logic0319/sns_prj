@@ -15,7 +15,7 @@ __all__ = ('PasswordSendView', 'PasswordChangeView', )
 
 class PasswordSendView(GenericAPIView):
 
-    def get(self, request, *args, **kwargs):
+    def get(self, **kwargs):
         if kwargs.get('email',''):
             email = kwargs['email']
             code = binascii.hexlify(os.urandom(12))[:12]
@@ -39,25 +39,19 @@ class PasswordChangeView(UpdateAPIView):
     serializer_class = PwChangeSerializer
     queryset = User.objects.all()
 
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-
     def patch(self, request, *args, **kwargs):
         return Response({"detail": "patch method는 허용되지 않습니다"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def update(self, request, *args, **kwargs):
-        print(request.data)
         instance = self.request.user
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.do_update(serializer, request)
-        print(serializer.data)
+        self.do_update(request)
         return Response(serializer.data)
 
-    def do_update(self, serializer, request):
+    def do_update(self, request):
         user = request.user
         password = request.data['password1']
         user.set_password(password)
         user.save()
-        serializer.save()
 
