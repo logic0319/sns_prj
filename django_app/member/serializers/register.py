@@ -7,6 +7,8 @@ from member.models import CustomUser
 UserModel = get_user_model()
 
 __all__ = ('RegisterSerializer', )
+
+
 class RegisterSerializer(serializers.Serializer):
     GENDER_CHOICE = (('M', "Male"), ('F', "Female"),)
     email = serializers.EmailField(required=True)
