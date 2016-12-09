@@ -50,12 +50,16 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
 
             if PostBookMark.objects.filter(post=instance.pk, bookmark_user=request.user.pk):
                 instance.is_bookmarked = True
+                instance.save()
             else:
                 instance.is_bookmarked = False
+                instance.save()
             if PostLike.objects.filter(post=instance.pk, like_user=request.user.pk):
                 instance.is_like = True
+                instance.save()
             else:
                 instance.is_like = False
+                instance.save()
 
             if user.latitude is not None and user.hardness is not None:
                 instance = self.get_object()
@@ -64,11 +68,13 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
                 sample = (author.latitude, author.hardness)
                 dist = cal_distance(stand, sample)
                 instance.distance = dist
+                instance.save()
                 serializer = self.get_serializer(instance)
                 return Response(serializer.data)
             else:
                 instance = self.get_object()
                 instance.distance = None
+                instance.save()
                 serializer = self.get_serializer(instance)
                 return Response(serializer.data)
 

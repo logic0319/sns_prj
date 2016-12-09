@@ -20,6 +20,8 @@ class Post(models.Model):
     bookmark_users = models.ManyToManyField(CustomUser, related_name='bookmark_users_set',blank=True)
     hashtags = models.ManyToManyField('HashTag', blank=True)
     distance = models.IntegerField(null=True)
+    is_bookmarked = models.BooleanField(default=False)
+    is_like = models.BooleanField(default=False)
     img = models.ImageField(upload_to=RandomFileName('photo/origin'), blank=True)
     img_thumbnail = models.ImageField(upload_to='photo/thumbnail', blank=True)
 
@@ -33,12 +35,6 @@ class Post(models.Model):
     @property
     def comments_counts(self):
         return self.comment_set.count()
-
-    def is_bookmarked(self):
-        return False
-
-    def is_like(self):
-        return False
 
     def make_thumbnail(self):
 
