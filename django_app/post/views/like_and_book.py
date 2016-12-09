@@ -25,14 +25,14 @@ class PostLikeView(generics.CreateAPIView,
         return super().create(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
-        pk = kwargs['pk']
-        user = request.user.pk
-        try:
-            instance = PostLike.objects.get(post=pk, like_user=user)
-        except PostLike.DoesNotExist:
+        post = kwargs['pk']
+        like_user = request.user.pk
+        if PostLike.objects.filter(post=post, like_user=like_user):
+            instance = PostLike.objects.get(post=post, like_user=like_user)
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
             return Response({"detail": "아직 좋아요를 누르지 않은 글입니다"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class PostBookMarkView(generics.CreateAPIView,
@@ -43,8 +43,8 @@ class PostBookMarkView(generics.CreateAPIView,
 
     def create(self, request, *args, **kwargs):
         post = kwargs['pk']
-        user = request.user.pk
-        if PostBookMark.objects.filter(post=post, bookmark_user=user):
+        bookmark_user = request.user.pk
+        if PostBookMark.objects.filter(post=post, bookmark_user=bookmark_user):
             return Response({"detail": "이미 북마크한 글입니다"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         request.data._mutable = True
         request.data['bookmark_user'] = request.user.pk
@@ -52,12 +52,12 @@ class PostBookMarkView(generics.CreateAPIView,
         return super().create(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
-        pk = kwargs['pk']
-        user = request.user.pk
-        try:
-            instance = PostBookMark.objects.get(post=pk, bookmark_user=user)
+        post = kwargs['pk']
+        bookmark_user = request.user.pk
+        if PostBookMark.objects.filter(post=post, bookmark_user=bookmark_user):
+            instance = PostBookMark.objects.get(post=post, bookmark_user=bookmark_user)
             self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
-        except PostBookMark.DoesNotExist:
+        else:
             return Response({"detail": "아직 북마크하지 않은 글입니다"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
