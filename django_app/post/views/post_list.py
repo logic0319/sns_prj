@@ -1,5 +1,5 @@
 import django_filters
-from django.contrib.auth.models import User
+from member.models import CustomUser as User
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -51,8 +51,9 @@ class PostListByDistanceView(generics.ListAPIView):
         user = self.request.user
         user_dist = []
         stand = user.latitude, user.hardness
-        for i in range(len(User.objects.exclude(pk=user.pk))):
-            pk, pos_x, pos_y = User.objects.exclude(pk=user.pk)[i].position
+        users_except_me = User.objects.exclude(pk=user.pk)
+        for i in range(len(users_except_me)):
+            pk, pos_x, pos_y = users_except_me[i].position
             if User.objects.get(pk=pk).latitude is not None and User.objects.get(pk=pk).hardness is not None:
                 dist = cal_distance(stand, (pos_x, pos_y))
                 if dist <= 30:
