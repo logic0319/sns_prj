@@ -1,4 +1,4 @@
-from rest_framework.generics import GenericAPIView, RetrieveAPIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
 
@@ -6,6 +6,7 @@ from member.models import CustomUser as User
 from member.serializers.userprofile import UserProfileSerializer
 
 __all__ = ('UserProfileView', )
+
 
 class UserProfileView(GenericAPIView):
     serializer_class = UserProfileSerializer
