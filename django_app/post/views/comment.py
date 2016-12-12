@@ -14,7 +14,7 @@ class CommentListCreateView(generics.ListCreateAPIView):
     pagination_class = CommentListPagination
 
     def get_queryset(self):
-        return Comment.objects.filter(pk=self.kwargs['post_pk'])
+        return Comment.objects.filter(post=self.kwargs['post_pk'])
 
     def create(self, request, *args, **kwargs):
         request.data._mutable = True
