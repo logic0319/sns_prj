@@ -46,4 +46,4 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return Post.objects.filter(pk__in=bookmark_pk).values_list('content','pk')
 
     def get_my_recent_comments(self, obj):
-        return Comment.objects.filter(author=obj.pk).order_by('-created_date')[:10].values_list('content','pk')
+        return Comment.objects.filter(author=obj.pk).order_by('-created_date')[:10].values_list('content','pk','post')
