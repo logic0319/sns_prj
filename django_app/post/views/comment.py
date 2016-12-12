@@ -1,6 +1,8 @@
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.response import Response
+
 from post.models import Comment
 from post.paginations import CommentListPagination
 from post.serializers import CommentSerializer
