@@ -43,7 +43,6 @@ class PasswordChangeView(UpdateAPIView):
         return Response({"detail": "put method는 허용되지 않습니다"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def patch(self, request, *args, **kwargs):
-        print(request.data)
         return self.update(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
