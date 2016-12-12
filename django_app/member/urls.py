@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from member.views.alarm import AlarmListView, AlarmDeleteView
+from member.views.alarm import AlarmListView, AlarmDeleteView, AlarmPostDeleteView
 from .views import LoginView, LogoutView, RegisterView, UserUpdateView, EmailVerifyingView, PasswordSendView, PasswordChangeView
 
 urlpatterns = [
@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^email_verify/(?P<hash>[\w]+)/$', EmailVerifyingView.as_view(), name='user_update'),
     url(r'^alarm/$', AlarmListView.as_view(), name='alarm_list'),
     url(r'^alarm/(?P<pk>\d+)/delete/$', AlarmDeleteView.as_view(), name='alarm_delete'),
+    url(r'^alarm/post/(?P<post_pk>\d+)/delete/$', AlarmPostDeleteView.as_view(), name='alarm_delete'),
 ]
