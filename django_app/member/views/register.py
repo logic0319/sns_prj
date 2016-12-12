@@ -8,9 +8,10 @@ from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from apis.mail import send_mail
+
 from member.models import CustomUser
 from member.serializers import TokenSerializer, RegisterSerializer
+from member.tasks import send_mail
 from sns_prj import settings
 
 __all__ = ('RegisterView', 'EmailVerifyingView')
@@ -26,7 +27,7 @@ class RegisterView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         content = request.META['HTTP_HOST'] + "/member/email_verify/" + user.get_email_verify_hash() + "/?email="+user.email
-        send_mail("email verifying", content, (user.email,))
+        send_mail.delay("email verifying", content, (user.email,))
         Token.objects.get_or_create(user=user)
 
         return Response(TokenSerializer(user.auth_token).data, status=status.HTTP_200_OK)
