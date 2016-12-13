@@ -30,8 +30,13 @@ class LoginSerializer(serializers.Serializer):
                 user = self._validate_email(email,password)
             except UserModel.DoesNotExist:
                 pass
-        if not user:
-            msg = _('유효하지 않은 로그인 정보 입니다.')
+        if user:
+            if not user.is_active:
+                msg = _('User account is disabled')
+                raise exceptions.ValidationError(msg)
+
+        else:
+            msg = _('Unable to log in with provided credentials')
             raise exceptions.ValidationError(msg)
         attrs['user'] = user
         return attrs

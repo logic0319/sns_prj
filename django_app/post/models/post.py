@@ -83,3 +83,4 @@ class Post(models.Model):
             default_storage.delete(self.img_thumbnail.name)
         super().delete(*args, **kwargs)
 
+
