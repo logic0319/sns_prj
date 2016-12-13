@@ -48,7 +48,6 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
             return super().retrieve(request, *args, **kwargs)
 
         if user.is_authenticated():
-
             if PostBookMark.objects.filter(post=instance.pk, bookmark_user=request.user.pk):
                 instance.is_bookmarked = True
                 instance.save()
