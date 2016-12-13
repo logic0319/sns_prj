@@ -1,9 +1,9 @@
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.response import Response
 
-from post.models import Comment
+from post.models import Alarm, Post, Comment
+
 from post.paginations import CommentListPagination
 from post.serializers import CommentSerializer
 
@@ -23,6 +23,11 @@ class CommentListCreateView(generics.ListCreateAPIView):
         request.data['author'] = request.user.pk
         request.data['post'] = kwargs.get('post_pk')
         return super().create(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        serializer.save()
+        post = Post.objects.get(pk=self.kwargs.get('post_pk'))
+        Alarm.objects.create(post=post, comment_author=self.request.user)
 
 
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
