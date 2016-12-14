@@ -16,7 +16,7 @@ urlpatterns = [
 
     url(r'^alarm/$', AlarmListView.as_view(), name='alarm_list'),
     url(r'^alarm/(?P<pk>\d+)/delete/$', AlarmDeleteView.as_view(), name='alarm_delete'),
-    url(r'^alarm/post/(?P<post_pk>\d+)/delete/$', AlarmPostDeleteView.as_view(), name='alarm_delete'),
+    url(r'^alarm/post/(?P<post_pk>\d+)/delete/$', AlarmPostDeleteView.as_view(), name='post_alarm_delete'),
 
     url(r'^userprofile/$', UserProfileView.as_view(), name='user_profile'),
 ]
