@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import status
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed, APIException, NotFound
 from rest_framework.generics import ListAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -37,7 +37,11 @@ class AlarmPostDeleteView(mixins.DestroyModelMixin, generics.GenericAPIView):
 
     def delete(self, *args, **kwargs):
         queryset = self.get_queryset()
-        post = Post.objects.get(pk=kwargs['post_pk'])
+        try:
+            post = Post.objects.get(pk=kwargs['post_pk'])
+        except Exception as e:
+            raise NotFound({"detail": e.args})
+
         if post.author.pk != self.request.user.pk:
             raise AuthenticationFailed(detail="수정 권한이 없습니다.")
         queryset.delete()
