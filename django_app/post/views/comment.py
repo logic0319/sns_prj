@@ -1,9 +1,11 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 
-from post.models import Comment
+from apis.fcm import *
+from post.models import Comment, Post
 from post.paginations import CommentListPagination
 from post.serializers import CommentSerializer
 
@@ -18,8 +20,14 @@ class CommentListCreateView(generics.ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         request.data._mutable = True
+        post_pk = kwargs.get('post_pk')
         request.data['author'] = request.user.pk
-        request.data['post'] = kwargs.get('post_pk')
+        request.data['post'] = post_pk
+        post = get_object_or_404(Post,pk=post_pk)
+        registration_id = post.author.registration_id
+        if registration_id:
+            message_body = "누군가 내 글 '{}'...에 댓글을 달았습니다".format(post.content)
+            messaging(message_body, post.pk, registration_id)
         return super().create(request, *args, **kwargs)
 
 

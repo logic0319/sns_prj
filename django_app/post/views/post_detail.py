@@ -93,5 +93,4 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
             request.data._mutable = True
             request.data['author'] = request.user.pk
             return super().destroy(request, *args, **kwargs)
-        raise AuthenticationFailed(detail="삭제 권한이 없습니다.")
-
+        raise AuthenticationFailed(detail="삭제 권한이 없습니다.") 
