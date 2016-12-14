@@ -68,8 +68,11 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
                 instance = self.get_object()
                 author = instance.author
                 stand = (user.latitude, user.hardness)
-                sample = (author.latitude, author.hardness)
-                dist = cal_distance(stand, sample)
+                if author.latitude is not None and author.hardness is not None:
+                    sample = (author.latitude, author.hardness)
+                    dist = cal_distance(stand, sample)
+                else:
+                    dist = None
                 instance.distance = dist
                 instance.save()
                 serializer = self.get_serializer(instance)
