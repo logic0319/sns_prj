@@ -35,9 +35,9 @@ class AlarmPostDeleteView(mixins.DestroyModelMixin, generics.GenericAPIView):
         queryset = Alarm.objects.filter(post=self.kwargs['post_pk'])
         return queryset
 
-    def delete(self):
+    def delete(self, *args, **kwargs):
         queryset = self.get_queryset()
-        post = Post.objects.get(pk=self.kwargs['post_pk'])
+        post = Post.objects.get(pk=kwargs['post_pk'])
         if post.author.pk != self.request.user.pk:
             raise AuthenticationFailed(detail="수정 권한이 없습니다.")
         queryset.delete()

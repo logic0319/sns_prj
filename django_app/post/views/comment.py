@@ -1,6 +1,6 @@
 from rest_framework import generics
 from rest_framework import permissions
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed, APIException
 
 from post.models import Alarm, Post, Comment
 
@@ -27,7 +27,10 @@ class CommentListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save()
         post = Post.objects.get(pk=self.kwargs.get('post_pk'))
-        Alarm.objects.create(post=post, comment_author=self.request.user)
+        try:
+            Alarm.objects.create(post=post, comment_author=self.request.user)
+        except Exception as e:
+            raise APIException({"detail": e.args})
 
 
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
