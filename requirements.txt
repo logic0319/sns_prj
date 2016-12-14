@@ -7,7 +7,9 @@ cement==2.8.2
 colorama==0.3.7
 defusedxml==0.4.1
 Django==1.10.3
+django-crispy-forms==1.6.1
 django-filter==1.0.1
+django-rest-auth==0.8.2
 django-storages==1.5.1
 django-versatileimagefield==1.6.1
 djangorestframework==3.5.3
@@ -21,6 +23,7 @@ pathspec==0.3.4
 Pillow==3.3.3
 psycopg2==2.6.2
 pyasn1==0.1.9
+pyfcm==1.2.0
 python-dateutil==2.6.0
 python3-openid==3.0.10
 PyYAML==3.12
