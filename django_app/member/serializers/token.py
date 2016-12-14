@@ -16,10 +16,12 @@ class TokenSerializer(serializers.ModelSerializer):
     user_age = serializers.SerializerMethodField()
     user_latitude = serializers.SerializerMethodField()
     user_hardness = serializers.SerializerMethodField()
+    user_registration_id = serializers.SerializerMethodField()
 
     class Meta:
         model = Token
-        fields = ('key','user','user_email','user_gender','user_age','user_latitude','user_hardness')
+        fields = ('key','user','user_email','user_gender','user_age','user_latitude','user_hardness',
+                  'user_registration_id')
 
     def get_user_email(self,obj):
         return obj.user.email
@@ -35,3 +37,6 @@ class TokenSerializer(serializers.ModelSerializer):
 
     def get_user_hardness(self,obj):
         return obj.user.hardness
+
+    def get_user_registration_id(self, obj):
+        return obj.user.registration_id
