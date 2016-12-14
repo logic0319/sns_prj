@@ -1,10 +1,10 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import permissions
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.response import Response
+from rest_framework.exceptions import AuthenticationFailed, APIException
 
 from apis.fcm import *
+from post.models import Alarm
 from post.models import Comment, Post
 from post.paginations import CommentListPagination
 from post.serializers import CommentSerializer
@@ -13,10 +13,12 @@ __all__ = ('CommentListCreateView', 'CommentDetailView',)
 
 
 class CommentListCreateView(generics.ListCreateAPIView):
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     pagination_class = CommentListPagination
+
+    def get_queryset(self):
+        return Comment.objects.filter(post=self.kwargs['post_pk'])
 
     def create(self, request, *args, **kwargs):
         request.data._mutable = True
@@ -29,6 +31,14 @@ class CommentListCreateView(generics.ListCreateAPIView):
             message_body = "누군가 내 글 '{}'...에 댓글을 달았습니다".format(post.content)
             messaging(message_body, post.pk, registration_id)
         return super().create(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        serializer.save()
+        post = Post.objects.get(pk=self.kwargs.get('post_pk'))
+        try:
+            Alarm.objects.create(post=post, comment_author=self.request.user)
+        except Exception as e:
+            raise APIException({"detail": e.args})
 
 
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):

@@ -45,6 +45,9 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         if user.is_anonymous():
             Post.objects.filter(pk=pk).update(distance=None)
+            instance.is_bookmarked = False
+            instance.is_like = False
+            instance.save()
             return super().retrieve(request, *args, **kwargs)
 
         if user.is_authenticated():

@@ -18,7 +18,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
                   'like_users_counts', 'distance','is_bookmarked', 'is_like','comments_counts', 'hashtags', 'img')
 
     def update(self, instance, validated_data):
-        hashtags = self.initial_data.get('hashtags')
+        hashtags = self.initial_data.getlist('hashtags')
         post = instance
         post.modified_date = timezone.now()
         post.content = validated_data.get('content', instance.content)
