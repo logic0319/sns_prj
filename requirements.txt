@@ -21,6 +21,7 @@ pathspec==0.3.4
 Pillow==3.3.3
 psycopg2==2.6.2
 pyasn1==0.1.9
+pyfcm==1.2.0
 python-dateutil==2.6.0
 python3-openid==3.0.10
 PyYAML==3.12

@@ -16,6 +16,7 @@ class CustomUserManager(BaseUserManager):
             latitude=None,
             hardness=None,
             password=None,
+            registration_id=None,
             ):
         user = self.model(
             email=email,
@@ -23,6 +24,7 @@ class CustomUserManager(BaseUserManager):
             age=age,
             latitude=latitude,
             hardness=hardness,
+            registration_id=registration_id,
         )
         user.set_password(password)
         user.save()
@@ -36,6 +38,7 @@ class CustomUserManager(BaseUserManager):
             latitude=None,
             hardness=None,
             password=None,
+            registration_id=None,
             ):
         user = self.model(
             email=email,
@@ -43,6 +46,7 @@ class CustomUserManager(BaseUserManager):
             age=age,
             latitude=latitude,
             hardness=hardness,
+            registration_id=registration_id,
         )
         user.set_password(password)
         user.is_staff = True
@@ -62,8 +66,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     age = models.DateField(null=True)
     latitude = models.FloatField(null=True)
     hardness = models.FloatField(null=True)
+
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    registration_id = models.CharField(null=True, max_length=300)
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
