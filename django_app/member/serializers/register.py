@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.exceptions import APIException
-
 from member.models import CustomUser
 
 UserModel = get_user_model()
@@ -18,6 +17,7 @@ class RegisterSerializer(serializers.Serializer):
     age = serializers.DateField(required=False)
     latitude = serializers.FloatField(required=False)
     hardness = serializers.FloatField(required=False)
+    registration_id = serializers.CharField(required=False)
 
     def create(self, validated_data):
         validated_data = {
@@ -27,6 +27,7 @@ class RegisterSerializer(serializers.Serializer):
             'age': validated_data.get('age'),
             'latitude': validated_data.get('latitude'),
             'hardness': validated_data.get('hardness'),
+            'registration_id': validated_data.get('registration_id'),
         }
         try:
             return CustomUser.objects.create_user(**validated_data)
