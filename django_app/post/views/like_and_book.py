@@ -25,12 +25,16 @@ class PostLikeView(generics.CreateAPIView,
         request.data._mutable = True
         request.data['like_user'] = request.user.pk
         request.data['post'] = post_pk
+        return super().create(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        serializer.save()
+        post_pk = self.kwargs.get('pk')
         post = get_object_or_404(Post, pk=post_pk)
         registration_id = post.author.registration_id
         if registration_id:
             message_body = "누군가 내 글 '{}'...에 좋아요를 눌렀습니다".format(post.content)
             messaging(message_body, post.pk, registration_id)
-        return super().create(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         post_pk = kwargs['pk']

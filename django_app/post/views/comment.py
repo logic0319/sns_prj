@@ -25,11 +25,6 @@ class CommentListCreateView(generics.ListCreateAPIView):
         post_pk = kwargs.get('post_pk')
         request.data['author'] = request.user.pk
         request.data['post'] = post_pk
-        post = get_object_or_404(Post,pk=post_pk)
-        registration_id = post.author.registration_id
-        if registration_id:
-            message_body = "누군가 내 글 '{}'...에 댓글을 달았습니다".format(post.content)
-            messaging(message_body, post.pk, registration_id)
         return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
@@ -37,6 +32,12 @@ class CommentListCreateView(generics.ListCreateAPIView):
         post = Post.objects.get(pk=self.kwargs.get('post_pk'))
         try:
             Alarm.objects.create(post=post, comment_author=self.request.user)
+            post_pk = self.kwargs.get('post_pk')
+            post = get_object_or_404(Post, pk=post_pk)
+            registration_id = post.author.registration_id
+            if registration_id:
+                message_body = "누군가 내 글 '{}'...에 댓글을 달았습니다".format(post.content)
+                messaging(message_body, post.pk, registration_id)
         except Exception as e:
             raise APIException({"detail": e.args})
 
