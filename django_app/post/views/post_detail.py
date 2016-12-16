@@ -8,7 +8,6 @@ from rest_framework.response import Response
 from post.functions import cal_distance
 from post.models import Post, PostBookMark, PostLike
 from post.serializers import PostCreateSerializer, PostDetailSerializer
-from django.utils import timezone
 
 __all__ = ('PostCreateView', 'PostDetailView', )
 
@@ -49,7 +48,6 @@ class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
             instance.is_like = False
             instance.save()
             return super().retrieve(request, *args, **kwargs)
-
         if user.is_authenticated():
             if PostBookMark.objects.filter(post=instance.pk, bookmark_user=request.user.pk):
                 instance.is_bookmarked = True

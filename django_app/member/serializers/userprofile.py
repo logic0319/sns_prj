@@ -23,7 +23,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
                   'received_like_counts', 'my_post_commented_counts', 'my_recent_posts', 'my_bookmark_posts',
                   'my_recent_comments', )
 
-
     def get_my_post_counts(self, obj):
         return Post.objects.filter(author=obj.pk).count()
 
@@ -50,3 +49,4 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_my_recent_comments(self, obj):
         return Comment.objects.filter(author=obj.pk).order_by('-created_date')[:10].values_list('content','pk','post')
+

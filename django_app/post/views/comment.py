@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import permissions
-from rest_framework.exceptions import AuthenticationFailed, APIException
 from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import AuthenticationFailed, APIException
 
 from apis.fcm import *
 from post.models import Alarm
