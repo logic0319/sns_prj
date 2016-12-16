@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import permissions
+from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import AuthenticationFailed, APIException
 
 from apis.fcm import *
@@ -35,7 +36,8 @@ class CommentListCreateView(generics.ListCreateAPIView):
             post_pk = self.kwargs.get('post_pk')
             post = get_object_or_404(Post, pk=post_pk)
             registration_id = post.author.registration_id
-            if registration_id:
+            is_logined = Token.objects.filter(user=post.author)
+            if registration_id and is_logined:
                 message_body = "누군가 내 글 '{}'...에 댓글을 달았습니다".format(post.content)
                 messaging(message_body, post.pk, registration_id)
         except Exception as e:
