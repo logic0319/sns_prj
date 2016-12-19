@@ -2,9 +2,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from apis.fcm import *
 
+from apis.fcm import *
 from post.models import PostBookMark, PostLike, Post
 from post.serializers import PostBookMarkSerializer, PostLikeSerializer
 
@@ -32,7 +33,8 @@ class PostLikeView(generics.CreateAPIView,
         post_pk = self.kwargs.get('pk')
         post = get_object_or_404(Post, pk=post_pk)
         registration_id = post.author.registration_id
-        if registration_id:
+        is_logined = Token.objects.filter(user=post.author)
+        if registration_id and is_logined:
             message_body = "누군가 내 글 '{}'...에 좋아요를 눌렀습니다".format(post.content)
             messaging(message_body, post.pk, registration_id)
 

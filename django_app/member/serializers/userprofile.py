@@ -23,7 +23,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
                   'received_like_counts', 'my_post_commented_counts', 'my_recent_posts', 'my_bookmark_posts',
                   'my_recent_comments', )
 
-
     def get_my_post_counts(self, obj):
         return Post.objects.filter(author=obj.pk).count()
 
@@ -42,8 +41,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return Post.objects.filter(author=obj.pk).order_by('-created_date')[:10].values_list('content','pk')
 
     def get_my_bookmark_posts(self, obj):
-        bookmark_pk = PostBookMark.objects.filter(bookmark_user=obj.pk).order_by('-created_date')[:10].values_list('pk',flat=True)
-        return Post.objects.filter(pk__in=bookmark_pk).values_list('content','pk')
+        bookmark_list = list(PostBookMark.objects.filter(bookmark_user=obj.pk).order_by('-created_date')[:10].values_list('post_id',flat=True))
+        clauses = ' '.join(['WHEN id=%s THEN %s' % (pk, i) for i, pk in enumerate(bookmark_list)])
+        ordering = 'CASE %s END' % clauses
+        query = Post.objects.filter(pk__in=bookmark_list).extra(select={'ordering':ordering}, order_by=('ordering',))
+        return query.values_list('content', 'pk')
 
     def get_my_recent_comments(self, obj):
         return Comment.objects.filter(author=obj.pk).order_by('-created_date')[:10].values_list('content','pk','post')
+
