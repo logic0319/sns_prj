@@ -19,6 +19,7 @@ class CustomUserManager(BaseUserManager):
             registration_id=None,
             ):
         user = self.model(
+
             email=email,
             gender=gender,
             age=age,
@@ -61,7 +62,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=100, unique=True)
     gender = models.CharField(max_length=10,
                               choices=GENDER_CHOICE,
-                              null=True,blank=True
+                              null=True, blank=True
                               )
     age = models.DateField(null=True)
     latitude = models.FloatField(null=True)

@@ -4,7 +4,7 @@ from .views import PostListView, PostDetailView, PostCreateView, MyPostListView,
 
 
 urlpatterns = [
-    url(r'^$', PostListView.as_view(), name='post_list'),
+    # url(r'^$', PostListView.as_view(), name='post_list'),
     url(r'^mylist/$', MyPostListView.as_view(), name='my_post_list'),
     url(r'^nearlist/$',PostListByDistanceView.as_view(),name='near_post_list'),
     url(r'^bookmark_list/$', PostListBookMarkedView.as_view(), name='post_bookmarked'),

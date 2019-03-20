@@ -9,7 +9,7 @@ from post.models import Post,PostBookMark
 from post.paginations import PostListPagination
 from post.serializers import PostListSerializer
 
-__all__ = ('MyPostListView', 'PostListView', 'PostListByDistanceView', 'PostListBookMarkedView', )
+__all__ = ('MyPostListView', 'PostListByDistanceView', 'PostListBookMarkedView', )
 
 
 class PostFilter(django_filters.rest_framework.FilterSet):

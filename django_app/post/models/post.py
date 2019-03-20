@@ -6,7 +6,6 @@ from django.core.files.storage import default_storage
 from django.db import models
 from member.models import CustomUser
 from sns_prj.custom_storage import RandomFileName
-from django.utils import timezone
 __all__ = ('Post', )
 
 

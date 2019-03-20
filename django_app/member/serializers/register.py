@@ -39,6 +39,7 @@ class RegisterSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         pass
 
+
     def validate(self, data):
         if data['password1'] != data['password2']:
             raise serializers.ValidationError("The two password fields didn't match.")

@@ -1,19 +1,19 @@
 import os
 import uuid
-
-from django.conf import settings
+#
+# from django.conf import settings
 from django.utils.deconstruct import deconstructible
-from storages.backends.s3boto import S3BotoStorage
-
-
-class StaticStorage(S3BotoStorage):
-    location = settings.STATICFILES_LOCATION
-
-
-class MediaStorage(S3BotoStorage):
-    location = settings.MEDIAFILES_LOCATION
-
-
+# from storages.backends.s3boto3 import S3Boto3Storage
+#
+#
+# class StaticStorage(S3Boto3Storage):
+#     location = settings.STATICFILES_LOCATION
+#
+#
+# class MediaStorage(S3Boto3Storage):
+#     location = settings.MEDIAFILES_LOCATION
+#
+#
 @deconstructible
 class RandomFileName(object):
     def __init__(self, path):

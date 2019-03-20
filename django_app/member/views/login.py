@@ -10,6 +10,7 @@ from member.serializers import TokenSerializer
 
 __all__ = ('LoginView', )
 
+
 class LoginView(GenericAPIView):
     permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
@@ -17,7 +18,7 @@ class LoginView(GenericAPIView):
 
     def login(self):
         self.user = self.serializer.validated_data['user']
-        self.token,created = Token.objects.get_or_create(user=self.user)
+        self.token, created = Token.objects.get_or_create(user=self.user)
         django_login(self.request, self.user)
 
     def get_response(self):
